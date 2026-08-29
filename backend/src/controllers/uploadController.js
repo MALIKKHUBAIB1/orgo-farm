@@ -16,6 +16,17 @@ function imageKit() {
   });
 }
 
+export async function uploadToken(req, res) {
+  try {
+    const ik = imageKit();
+    const params = ik.helper.getAuthenticationParameters();
+    res.json({ publicKey: process.env.IMAGEKIT_PUBLIC_KEY, ...params });
+  } catch (error) {
+    console.error("[uploads] token failed:", error.message);
+    res.status(500).json({ error: "Could not prepare upload" });
+  }
+}
+
 export async function uploadImage(req, res) {
   const chunked = req.headers["transfer-encoding"];
   const bytes = Number(req.headers["content-length"] || 0);

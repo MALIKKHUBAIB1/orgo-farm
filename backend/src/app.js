@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import instagramRoutes from "./routes/instagramRoutes.js";
+import { runNewsletterCron } from "./utils/newsletter.js";
 import { configureCors, createRateLimiter, rejectUnsafeKeys, securityHeaders } from "./middleware/security.js";
 
 const PUBLIC_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public");
@@ -31,6 +32,18 @@ export function createApp() {
   app.use(createRateLimiter({ windowMs: 15 * 60 * 1000, max: 300, message: "Too many requests. Try again later." }));
 
   app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+  app.get("/api/cron/newsletter", async (req, res) => {
+    const secret = String(req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
+    if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET)
+      return res.status(403).json({ error: "Forbidden" });
+    try {
+      const result = await runNewsletterCron();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   app.use("/api/products", productRoutes);
   app.use("/api/curations", curationRoutes);

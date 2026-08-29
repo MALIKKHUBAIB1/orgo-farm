@@ -67,15 +67,21 @@ export function adminLogout() {
   setAdminToken("");
 }
 
-export async function adminUploadImage(file: File): Promise<string> {
+export async function adminUploadImage(file: File, folder = "/products"): Promise<string> {
   const token = getAdminToken();
   if (!token) throw new ApiError("Admin login required");
-  const ext = "." + (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-  const res = await fetch(`${API_URL}/api/uploads?ext=${encodeURIComponent(ext)}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: file,
-  });
+  const auth: { publicKey: string; token: string; expire: number; signature: string } = await adminFetch(
+    "/api/uploads/token",
+  );
+  const form = new FormData();
+  form.append("apiKey", auth.publicKey);
+  form.append("file", file);
+  form.append("fileName", file.name);
+  form.append("folder", folder);
+  form.append("token", auth.token);
+  form.append("expire", String(auth.expire));
+  form.append("signature", auth.signature);
+  const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", { method: "POST", body: form });
   const data: unknown = await res.json().catch(() => null);
   if (!res.ok) {
     const msg =
@@ -84,5 +90,8 @@ export async function adminUploadImage(file: File): Promise<string> {
         : "Upload failed";
     throw new ApiError(msg);
   }
-  return (data as { path: string }).path;
+  const url =
+    data && typeof data === "object" && "url" in data && typeof data.url === "string" ? data.url : "";
+  if (!url) throw new ApiError("Upload failed");
+  return url;
 }
