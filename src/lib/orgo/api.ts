@@ -1,6 +1,8 @@
 import { getToken } from "./token";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === "production" ? "https://orgo-farm-backend.onrender.com" : "http://localhost:5000");
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.NODE_ENV === "production" ? "https://www.weorgofarm.in" : "http://localhost:3000");
