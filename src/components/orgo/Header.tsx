@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Heart, Home, Menu, Search, ShoppingBag, User, X } from "lucide-react";
@@ -277,34 +278,53 @@ export function Header({ products }: { products: Product[] }) {
 
 export function MobileTabBar() {
   const { count, wishlist } = useShop();
-  const cls = "flex flex-1 flex-col items-center gap-1 py-2.5 text-[9px] tracking-[0.16em] text-foreground/70";
+  const pathname = usePathname();
+  const isActive = {
+    home: pathname === "/",
+    shop: pathname === "/shop" || pathname.startsWith("/product/"),
+    wishlist: pathname === "/wishlist",
+    cart: pathname === "/cart",
+    account: pathname === "/account",
+  };
+  const cls = (on: boolean) =>
+    `flex flex-1 flex-col items-center gap-1 py-2.5 text-[9px] tracking-[0.16em] transition-colors ${
+      on ? "text-primary" : "text-foreground/70"
+    }`;
+  const bar = (on: boolean) => (
+    <span className={`h-0.5 w-7 rounded-full bg-primary transition-opacity ${on ? "opacity-100" : "opacity-0"}`} />
+  );
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-border bg-card/95 backdrop-blur md:hidden">
-      <Link href="/" className={cls}>
+      <Link href="/" className={cls(isActive.home)}>
         <Home className="size-[18px]" />
         HOME
+        {bar(isActive.home)}
       </Link>
-      <Link href="/shop" className={cls}>
+      <Link href="/shop" className={cls(isActive.shop)}>
         <ShoppingBag className="size-[18px]" />
         SHOP
+        {bar(isActive.shop)}
       </Link>
-      <Link href="/wishlist" className={cls}>
+      <Link href="/wishlist" className={cls(isActive.wishlist)}>
         <span className="relative">
           <Heart className="size-[18px]" />
           {wishlist.length ? <span className="absolute -right-2 -top-1 size-1.5 rounded-full bg-rose" /> : null}
         </span>
         WISHLIST
+        {bar(isActive.wishlist)}
       </Link>
-      <Link href="/cart" className={cls}>
+      <Link href="/cart" className={cls(isActive.cart)}>
         <span className="relative">
           <ShoppingBag className="size-[18px]" />
           {count ? <span className="absolute -right-2 -top-1 size-1.5 rounded-full bg-primary" /> : null}
         </span>
         CART
+        {bar(isActive.cart)}
       </Link>
-      <Link href="/account" className={cls}>
+      <Link href="/account" className={cls(isActive.account)}>
         <User className="size-[18px]" />
         ACCOUNT
+        {bar(isActive.account)}
       </Link>
     </nav>
   );
