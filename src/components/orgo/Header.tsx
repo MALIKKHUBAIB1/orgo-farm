@@ -160,6 +160,9 @@ export function Header({ products }: { products: Product[] }) {
   const { count, wishlist } = useShop();
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
+  const pathname = usePathname();
+  const navActive = (to: string) =>
+    to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(to);
 
   return (
     <header className="sticky top-0 z-50">
@@ -180,7 +183,9 @@ export function Header({ products }: { products: Product[] }) {
               <Link
                 key={n.to}
                 href={n.to}
-                className="text-[13px] tracking-wide text-foreground/80 transition-colors hover:text-primary"
+                className={`text-[13px] tracking-wide transition-colors ${
+                  navActive(n.to) ? "text-primary" : "text-foreground/80 hover:text-primary"
+                }`}
               >
                 {n.label}
               </Link>
@@ -251,7 +256,9 @@ export function Header({ products }: { products: Product[] }) {
                     key={n.to}
                     href={n.to}
                     onClick={() => setMenu(false)}
-                    className="font-display text-2xl text-primary"
+                    className={`font-display text-2xl ${
+                      navActive(n.to) ? "text-primary underline underline-offset-8" : "text-primary"
+                    }`}
                   >
                     {n.label}
                   </Link>
