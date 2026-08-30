@@ -183,11 +183,16 @@ export function Header({ products }: { products: Product[] }) {
               <Link
                 key={n.to}
                 href={n.to}
-                className={`text-[13px] tracking-wide transition-colors ${
+                className={`relative pb-1 text-[13px] tracking-wide transition-colors ${
                   navActive(n.to) ? "text-primary" : "text-foreground/80 hover:text-primary"
                 }`}
               >
                 {n.label}
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 rounded-full bg-primary transition-all duration-300 ${
+                    navActive(n.to) ? "w-full" : "w-0"
+                  }`}
+                />
               </Link>
             ))}
           </nav>
