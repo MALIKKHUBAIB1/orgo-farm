@@ -1,13 +1,26 @@
 import { API_URL, SITE_URL } from "./api";
 import type { Product } from "./products";
 
+export const BUSINESS_ADDRESS = "Peshkar Rd, Sisamau, Colonelganj, Kanpur, Uttar Pradesh 208001";
+
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
     name: "ORGO FARM",
     url: SITE_URL,
     logo: `${SITE_URL}/orgo/logo.jpg`,
+    email: "Orgofarm15@gmail.com",
+    sameAs: ["https://instagram.com/orgo.farm_"],
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Peshkar Rd, Sisamau, Colonelganj",
+      addressLocality: "Kanpur",
+      addressRegion: "Uttar Pradesh",
+      postalCode: "208001",
+      addressCountry: "IN",
+    },
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+91-92362-06988",
@@ -24,7 +37,7 @@ export function webSiteJsonLd() {
     name: "ORGO FARM",
     url: SITE_URL,
     description: "Pure & natural handmade skincare from ORGO FARM.",
-    publisher: { "@type": "Organization", name: "ORGO FARM", logo: `${SITE_URL}/orgo/logo.jpg` },
+    publisher: { "@id": `${SITE_URL}/#organization` },
   };
 }
 

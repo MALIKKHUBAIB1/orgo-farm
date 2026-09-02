@@ -3,7 +3,7 @@ import { Curations } from "@/components/orgo/home/Curations";
 import { img } from "@/lib/orgo/products";
 
 export const metadata: Metadata = {
-  title: "Curated Wellness Sets — ORGO FARM",
+  title: "Natural Skincare Gift Sets & Wellness Bundles | ORGO FARM",
   description:
     "Bronze, Silver and Gold ORGO FARM curations: thoughtfully selected handmade skincare rituals for every self-care journey.",
   alternates: { canonical: "/collections" },

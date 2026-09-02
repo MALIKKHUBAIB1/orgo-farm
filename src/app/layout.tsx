@@ -19,6 +19,21 @@ export const metadata: Metadata = {
   },
   description:
     "ORGO FARM crafts 100% natural, handmade skincare with farm-fresh ingredients. No parabens, no artificial fragrances.",
+  openGraph: {
+    title: "ORGO FARM — Pure & Natural Handmade Skincare",
+    description:
+      "ORGO FARM crafts 100% natural, handmade skincare with farm-fresh ingredients. No parabens, no artificial fragrances.",
+    siteName: "ORGO FARM",
+    type: "website",
+    images: [{ url: `${SITE_URL}/orgo/logo.jpg`, alt: "ORGO FARM handmade skincare" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ORGO FARM — Pure & Natural Handmade Skincare",
+    description:
+      "ORGO FARM crafts 100% natural, handmade skincare with farm-fresh ingredients. No parabens, no artificial fragrances.",
+    images: [`${SITE_URL}/orgo/logo.jpg`],
+  },
   authors: [{ name: "ORGO FARM" }],
   keywords: [
     "organic skincare India",
@@ -28,15 +43,6 @@ export const metadata: Metadata = {
     "tan removal",
     "ORGO FARM",
   ],
-  openGraph: {
-    siteName: "ORGO FARM",
-    type: "website",
-    images: [{ url: `${SITE_URL}/orgo/logo.jpg`, alt: "ORGO FARM" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    images: [`${SITE_URL}/orgo/logo.jpg`],
-  },
   icons: {
     icon: "/favicon.png",
   },

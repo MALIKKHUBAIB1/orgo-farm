@@ -4,7 +4,7 @@ import { products as fallbackProducts, type Product } from "@/lib/orgo/products"
 import { ShopView } from "./view";
 
 export const metadata: Metadata = {
-  title: "Shop Natural Skincare — ORGO FARM",
+  title: "Buy Handmade Organic Skincare Online in India | ORGO FARM",
   description:
     "Shop ORGO FARM handmade skincare: signature face pack, lemon, rose and D-Tan coffee scrub bars. Free standard shipping across India.",
   alternates: { canonical: "/shop" },

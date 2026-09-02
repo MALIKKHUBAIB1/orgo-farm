@@ -87,9 +87,9 @@ function InstaEditor({
         </span>
       </div>
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/70">
-        Tip: Asli shortcode use karo (URL me /reel/ ke baad ka part). Reel aur post dono embed hote hain.
-        Agar kisi reel pe &ldquo;content blocked&rdquo; dikhe to uska matlab Instagram us reel ko
-        (music/region) embed nahi karne deta — alag reel chuno ya Instagram pe hi share rakho.
+        Tip: Use the shortcode from the URL (the part after /reel/). Both reels and posts embed fine.
+        If a reel shows &ldquo;content blocked&rdquo;, Instagram won&rsquo;t let that reel embed due to music/region —
+        pick a different reel or leave it shared on Instagram.
       </p>
     </div>
   );

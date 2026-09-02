@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { adminFetch, adminUploadImage } from "@/lib/orgo/admin";
 import { refreshCatalog } from "@/lib/orgo/catalog";
 import { resolveImage } from "@/lib/orgo/image";
 import { inr, type Product } from "@/lib/orgo/products";
+import { getShopSettings, type ShopSettings } from "@/lib/orgo/shop-settings";
 import { Field, btnDanger, btnGhost, btnPrimary, inputCls } from "@/components/admin/ui";
 
 type ProductDraft = {
@@ -103,28 +105,71 @@ function fromDraft(d: ProductDraft) {
   };
 }
 
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function concernsListOf(text: string) {
+  return text.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
 function ProductForm({
   initial,
+  settings,
   onSave,
   onCancel,
 }: {
   initial: ProductDraft | null;
+  settings: ShopSettings | null;
   onSave: (d: ProductDraft, isNew: boolean) => Promise<void>;
   onCancel: () => void;
 }) {
   const [draft, setDraft] = useState<ProductDraft>(initial ?? emptyDraft);
   const [priceText, setPriceText] = useState(initial ? String(initial.price) : "");
+  const [slugTouched, setSlugTouched] = useState(!initial);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
 
   const galleryList = useMemo(() => galleryPaths(draft.galleryText), [draft.galleryText]);
+  const concernsList = useMemo(() => concernsListOf(draft.concernsText), [draft.concernsText]);
+  const configuredCategories = settings?.categories ?? [];
+  const configuredConcerns = settings?.concerns ?? [];
+
+  const concernChips = useMemo(() => {
+    const extras = concernsList.filter(
+      (c) => !configuredConcerns.some((x) => x.toLowerCase() === c.toLowerCase()),
+    );
+    return [...configuredConcerns, ...extras];
+  }, [configuredConcerns, concernsList]);
 
   const set = <K extends keyof ProductDraft>(key: K, value: ProductDraft[K]) => {
     setError("");
     setDraft((d) => ({ ...d, [key]: value }));
   };
+
+  const onNameChange = (name: string) => {
+    set("name", name);
+    if (!slugTouched) set("slug", slugify(name));
+  };
+
+  const toggleConcern = (c: string) => {
+    const has = concernsList.some((x) => x.toLowerCase() === c.toLowerCase());
+    const next = has
+      ? concernsList.filter((x) => x.toLowerCase() !== c.toLowerCase())
+      : [...concernsList, c];
+    set("concernsText", next.slice(0, 10).join(", "));
+  };
+
+  const chipCls = (active: boolean) =>
+    `rounded border px-3 py-1.5 text-xs transition-colors ${
+      active ? "border-primary bg-primary text-primary-foreground" : "border-border text-foreground/70 hover:border-primary"
+    }`;
 
   const onPriceChange = (raw: string) => {
     const filtered = raw.replace(/[^0-9.]/g, "");
@@ -176,10 +221,23 @@ function ProductForm({
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2">
         <Field label="Product name">
-          <input className={inputCls} value={draft.name} onChange={(e) => set("name", e.target.value)} />
+          <input className={inputCls} value={draft.name} onChange={(e) => onNameChange(e.target.value)} />
         </Field>
-        <Field label="Slug" hint="Lowercase letters, numbers & dashes. Used in the URL.">
-          <input className={inputCls} value={draft.slug} onChange={(e) => set("slug", e.target.value)} />
+        <Field label="Slug" hint="Auto-filled from the name. Used in the URL.">
+          <div className="flex gap-2">
+            <input className={inputCls} value={draft.slug} onChange={(e) => { setSlugTouched(true); set("slug", slugify(e.target.value)); }} />
+            <button
+              className={btnGhost}
+              onClick={() => {
+                setSlugTouched(true);
+                set("slug", slugify(draft.name));
+              }}
+              type="button"
+              title="Regenerate from name"
+            >
+              <RefreshCw className="size-3.5" />
+            </button>
+          </div>
         </Field>
         <Field label="Size">
           <input className={inputCls} value={draft.size} onChange={(e) => set("size", e.target.value)} placeholder="50g" />
@@ -206,13 +264,44 @@ function ProductForm({
         <Field label="Category">
           <input className={inputCls} value={draft.category} onChange={(e) => set("category", e.target.value)} />
         </Field>
+        {configuredCategories.length ? (
+          <div className="flex flex-wrap content-start gap-2">
+            {configuredCategories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={chipCls(draft.category === c)}
+                onClick={() => set("category", draft.category === c ? "" : c)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        ) : null}
         <Field label="Type">
           <input className={inputCls} value={draft.type} onChange={(e) => set("type", e.target.value)} />
         </Field>
         <div className="sm:col-span-2">
-          <Field label="Concerns" hint="Comma separated, e.g. Acne, Tan, Dullness">
+          <Field label="Skin concerns" hint="Select from the shop filter chips below, or type a custom concern.">
             <input className={inputCls} value={draft.concernsText} onChange={(e) => set("concernsText", e.target.value)} />
           </Field>
+          {concernChips.length ? (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {concernChips.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={chipCls(concernsList.some((x) => x.toLowerCase() === c.toLowerCase()))}
+                  onClick={() => toggleConcern(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <p className="mt-1 text-[11px] text-muted-foreground/70">
+            The chips you switch ON here are the filters under which the product will appear in the shop.
+          </p>
         </div>
         <div className="sm:col-span-2">
           <Field label="Short description">
@@ -397,6 +486,7 @@ export function ProductsManager() {
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Product | null | "new" | undefined>(undefined);
   const [busyId, setBusyId] = useState("");
+  const [settings, setSettings] = useState<ShopSettings | null>(null);
   const [version, setVersion] = useState(0);
 
   useEffect(() => {
@@ -409,6 +499,16 @@ export function ProductsManager() {
         if (!cancelled) setProducts([]);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
+  }, [version]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getShopSettings().then((s) => {
+      if (!cancelled) setSettings(s);
+    });
     return () => {
       cancelled = true;
     };
@@ -533,6 +633,7 @@ export function ProductsManager() {
       ) : (
         <ProductForm
           initial={editing && editing !== "new" ? toDraft(editing) : null}
+          settings={settings}
           onCancel={() => setEditing(undefined)}
           onSave={async (draft, isNew) => {
             const body = fromDraft(draft);

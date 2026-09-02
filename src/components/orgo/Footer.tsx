@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { MapPin, MessageCircle } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "@/components/orgo/icons";
 import { img, WHATSAPP_NUMBER } from "@/lib/orgo/products";
 import { API_URL } from "@/lib/orgo/api";
+import { BUSINESS_ADDRESS } from "@/lib/orgo/schema";
 
 const cols = [
   {
@@ -76,7 +77,7 @@ function NewsletterForm() {
         }
       }}
     >
-      <p className="text-sm font-medium text-primary-foreground/90">Join for new product alerts</p>
+      {/* <p className="text-sm font-medium text-primary-foreground/90">Join for new product alerts</p>
       <div className="mt-2 flex items-stretch gap-2">
         <input
           type="email"
@@ -98,7 +99,7 @@ function NewsletterForm() {
       </div>
       {message ? (
         <p className={`mt-2 text-xs ${status === "error" ? "text-rose" : "text-primary-foreground/75"}`}>{message}</p>
-      ) : null}
+      ) : null} */}
     </form>
   );
 }
@@ -111,6 +112,10 @@ export function Footer() {
           <img src={img.logo} alt="ORGO FARM logo" className="size-16 rounded-full object-cover" />
           <p className="mt-5 font-display text-2xl tracking-[0.18em]">ORGO FARM</p>
           <p className="mt-2 text-sm text-primary-foreground/70">Pure & Natural Skincare Products</p>
+          <p className="mt-5 flex max-w-xs items-start gap-2 text-sm leading-relaxed text-primary-foreground/75">
+            <MapPin className="mt-0.5 size-4 shrink-0" />
+            <span>{BUSINESS_ADDRESS}</span>
+          </p>
           <p className="mt-6 font-script text-2xl text-primary-foreground/80">Handcrafted With Love</p>
           <NewsletterForm />
         </div>
@@ -134,9 +139,14 @@ export function Footer() {
           <p className="eyebrow text-primary-foreground/60">FOLLOW</p>
           <ul className="mt-5 space-y-3 text-sm">
             <li>
-              <Link href="/instagram" className="flex items-center gap-2">
-                <InstagramIcon className="size-4" /> Instagram Videos
-              </Link>
+              <a
+                href="https://instagram.com/orgo.farm_"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2"
+              >
+                <InstagramIcon className="size-4" /> Instagram
+              </a>
             </li>
             <li>
               <a href="#" className="flex items-center gap-2">

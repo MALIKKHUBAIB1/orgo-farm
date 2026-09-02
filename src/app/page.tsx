@@ -15,7 +15,18 @@ export const metadata: Metadata = {
   description:
     "Handmade organic skincare from ORGO FARM: face packs, rose, lemon and coffee scrub bars crafted with farm-fresh ingredients. No parabens, no artificial fragrances.",
   alternates: { canonical: "/" },
-  keywords: ["organic skincare India", "handmade face pack", "natural skincare", "tan removal", "ORGO FARM"],
+  keywords: [
+    "handmade organic skincare India",
+    "natural skincare products India",
+    "organic face pack India",
+    "coffee scrub bar",
+    "rose scrub bar",
+    "lemon scrub bar",
+    "tan removal skincare",
+    "paraben free skincare",
+    "farm fresh skincare",
+    "ORGO FARM",
+  ],
 };
 
 export default function Home() {

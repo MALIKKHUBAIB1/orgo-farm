@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { Leaf, HandHeart, Sparkles, Sprout } from "lucide-react";
 import { img } from "@/lib/orgo/products";
+import { useCatalog } from "@/lib/orgo/catalog";
 
 const trust = [
   { icon: Leaf, label: "100% Natural" },
@@ -13,6 +14,15 @@ const trust = [
 ];
 
 export function Hero() {
+  const { hero } = useCatalog();
+  const heroImage = hero?.heroImage || img.collection;
+  const overlayImage = hero?.overlayImage || img.facePack;
+  const tagline = hero?.tagline || "Handcrafted with Love";
+  const title = hero?.title || "Pure Care. Straight From Nature.";
+  const subtitle =
+    hero?.subtitle ||
+    "Premium handmade skincare crafted with natural, farm-fresh ingredients and brought directly from the farm to your skin.";
+  const [titleA, ...titleRest] = title.split("<br>");
   return (
     <section className="relative overflow-hidden paper">
       <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-4 pb-16 pt-14 md:px-8 md:pb-24 md:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
@@ -21,15 +31,14 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="font-script text-3xl text-rose">Handcrafted with Love</p>
+          <p className="font-script text-3xl text-rose">{tagline}</p>
           <h1 className="mt-4 text-5xl leading-[1.05] text-primary md:text-7xl">
-            Pure Care.
+            {titleA}
             <br />
-            Straight From Nature.
+            {titleRest.join("<br>")}
           </h1>
           <p className="mt-6 max-w-lg text-sm leading-relaxed text-muted-foreground md:text-base">
-            Premium handmade skincare crafted with natural, farm-fresh ingredients and brought directly from the farm
-            to your skin.
+            {subtitle}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
@@ -55,12 +64,12 @@ export function Hero() {
         >
           <div className="absolute -left-10 top-10 hidden size-56 rounded-full bg-beige/70 blur-3xl md:block" />
           <img
-            src={img.collection}
+            src={heroImage}
             alt="ORGO FARM handmade botanical soap collection with rose petals and lemons"
             className="relative aspect-[4/5] w-full rounded-t-[999px] object-cover soft-shadow"
           />
           <img
-            src={img.facePack}
+            src={overlayImage}
             alt="ORGO FARM Signature Face Pack pouch"
             className="absolute -bottom-6 -left-6 hidden w-40 rounded-sm object-cover lift-shadow md:block lg:w-48"
           />

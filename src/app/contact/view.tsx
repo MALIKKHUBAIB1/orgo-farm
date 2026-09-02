@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail, MapPin, MessageCircle } from "lucide-react";
 import { InstagramIcon } from "@/components/orgo/icons";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/orgo/api";
 import { WHATSAPP_NUMBER } from "@/lib/orgo/products";
+import { BUSINESS_ADDRESS } from "@/lib/orgo/schema";
 
 export function ContactView() {
   const [sent, setSent] = useState(false);
@@ -86,6 +87,10 @@ export function ContactView() {
           </li>
           <li className="flex items-center gap-3">
             <Mail className="size-4 text-accent" /> Orgofarm15@gmail.com
+          </li>
+          <li className="flex items-start gap-3">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-accent" />
+            <span>{BUSINESS_ADDRESS}</span>
           </li>
         </ul>
         <p className="mt-8 font-script text-2xl text-rose">Made with love, from nature</p>

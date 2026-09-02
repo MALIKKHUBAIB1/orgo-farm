@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut, Package, Sparkles, MessagesSquare, Mail, Video, CircleHelp, ExternalLink, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, LogOut, Package, Sparkles, MessagesSquare, Mail, Video, CircleHelp, SlidersHorizontal, MessageSquareQuote, GalleryHorizontalEnd, BarChart3, ExternalLink, type LucideIcon } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { adminLogout, adminMe, type AdminUser } from "@/lib/orgo/admin";
 
@@ -10,10 +10,14 @@ const nav: { label: string; to: string; icon: LucideIcon }[] = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
   { label: "Products", to: "/admin/products", icon: Package },
   { label: "Curations", to: "/admin/curations", icon: Sparkles },
+  { label: "Traffic & Visitors", to: "/admin/analytics", icon: BarChart3 },
   { label: "Subscribers", to: "/admin/subscribers", icon: Mail },
   { label: "FAQs", to: "/admin/faqs", icon: CircleHelp },
   { label: "Instagram Posts", to: "/admin/instagram", icon: Video },
+  { label: "Testimonials", to: "/admin/testimonials", icon: MessageSquareQuote },
   { label: "Contact Messages", to: "/admin/contacts", icon: MessagesSquare },
+  { label: "Hero Section", to: "/admin/hero-settings", icon: GalleryHorizontalEnd },
+  { label: "Shop Filters", to: "/admin/shop-settings", icon: SlidersHorizontal },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
