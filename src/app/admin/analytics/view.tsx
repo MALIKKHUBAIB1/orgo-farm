@@ -6,6 +6,33 @@ import { adminFetch } from "@/lib/orgo/admin";
 import type { Analytics } from "@/lib/orgo/analytics";
 import { btnGhost } from "@/components/admin/ui";
 
+function isLocalIp(ip?: string) {
+  if (!ip) return false;
+  const v = ip.toLowerCase().startsWith("::ffff:") ? ip.slice("::ffff:".length) : ip;
+  return v === "::1" || v === "127.0.0.1" || v.startsWith("127.");
+}
+
+// "::1" is just IPv6 localhost — it means YOU opened the site on your own
+// machine (npm run dev). Real visitors in production show their public IP.
+function fmtIp(ip?: string) {
+  if (!ip) return "Unknown visitor";
+  if (isLocalIp(ip)) return "This device · local test";
+  return ip;
+}
+
+function fmtBrowser(v: { browser?: string; os?: string }) {
+  if (v.browser && v.os) return `${v.browser} / ${v.os}`;
+  if (v.browser) return v.browser;
+  if (v.os) return v.os;
+  // Old rows from server health-checks (GoogleHC etc.) stored no UA.
+  return "Server / health check";
+}
+
+function fmtLocation(v: { city?: string; country?: string; timezone?: string }) {
+  const parts = [v.city, v.country, v.timezone].filter(Boolean);
+  return parts.join(" · ");
+}
+
 function fmtTime(iso?: string) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -202,10 +229,12 @@ export function AnalyticsView() {
                   data.ips.map((v) => (
                     <li key={v.ip} className="flex items-center justify-between py-2.5 text-sm">
                       <div>
-                        <p className="font-medium text-foreground">{v.ip}</p>
+                        <p className="font-medium text-foreground" title={v.ip}>
+                          {fmtIp(v.ip)}
+                        </p>
                         <p className="text-[11px] text-muted-foreground">
                           Last seen: {fmtTime(v.lastSeen)}
-                          {v.ip.includes("127") || v.ip.startsWith("::1") || v.ip.startsWith("::ffff:127") ? " · Local" : ""}
+                          {isLocalIp(v.ip) ? " · you, testing locally" : ""}
                         </p>
                       </div>
                       <span className="shrink-0 rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -230,9 +259,14 @@ export function AnalyticsView() {
                         <span className="shrink-0 text-[11px] text-muted-foreground">{fmtTime(v.createdAt)}</span>
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        {v.ip || "—"} · {v.browser || "?"} / {v.os || "?"} · {v.device || "?"}
+                        {fmtIp(v.ip)} · {fmtBrowser(v)} · {v.device || "Unknown"}
                         {v.took ? ` · ${v.took}ms` : ""}
                       </p>
+                      {fmtLocation(v) || v.referrer ? (
+                        <p className="text-[11px] text-muted-foreground/70">
+                          {[fmtLocation(v), v.referrer ? `from ${v.referrer}` : ""].filter(Boolean).join(" · ")}
+                        </p>
+                      ) : null}
                     </li>
                   ))
                 )}

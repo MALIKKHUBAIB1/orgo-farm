@@ -15,6 +15,7 @@ import adminAuthRoutes from "./routes/adminAuthRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import visitRoutes from "./routes/visitRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import instagramRoutes from "./routes/instagramRoutes.js";
 import { runNewsletterCron } from "./utils/newsletter.js";
@@ -62,6 +63,7 @@ export function createApp() {
   app.use("/api/admin", adminRoutes);
   app.use("/api/uploads", uploadRoutes);
   app.use("/api/subscriptions", subscriptionRoutes);
+  app.use("/api/visits", visitRoutes);
   app.use("/api/faqs", faqRoutes);
   app.use("/api/instagram", instagramRoutes);
   app.use("/api/testimonials", testimonialRoutes);

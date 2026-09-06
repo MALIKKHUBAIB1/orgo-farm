@@ -7,6 +7,8 @@ export type VisitRecord = {
   referrer: string;
   city: string;
   country: string;
+  timezone: string;
+  language: string;
   took: number;
   createdAt: string;
 };
