@@ -74,7 +74,12 @@ export function faqJsonLd(faqs: { question: string; answer: string }[]) {
   };
 }
 
-export function productJsonLd(product: Product, url: string, areaServed?: object) {
+export function productJsonLd(
+  product: Product,
+  url: string,
+  areaServed?: object,
+  aggregate?: { ratingValue: number; reviewCount: number },
+) {
   const image = absoluteImage(product);
   return {
     "@context": "https://schema.org",
@@ -86,6 +91,15 @@ export function productJsonLd(product: Product, url: string, areaServed?: object
     category: product.category,
     brand: { "@type": "Brand", name: "ORGO FARM" },
     ...(areaServed ? { areaServed } : {}),
+    ...(aggregate && aggregate.reviewCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: aggregate.ratingValue,
+            reviewCount: aggregate.reviewCount,
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
       url,

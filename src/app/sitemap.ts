@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/collections`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/blog`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
     { url: `${base}/instagram`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
     { url: `${base}/faq`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/how-to-use`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -88,5 +89,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ],
   );
 
-  return [...statics, ...productPages, ...concernPages, ...typePages, ...categoryPages, ...cityPages];
+  // Blog posts from Sanity (falls back to empty — statics already cover /blog).
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const projectId = process.env.SANITY_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+    const dataset = process.env.SANITY_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+    if (projectId) {
+      const q = encodeURIComponent(
+        `*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`,
+      );
+      const res = await fetch(
+        `https://${projectId}.apicdn.sanity.io/v2025-01-01/data/query/${dataset}?query=${q}`,
+        { next: { revalidate: 3600 } },
+      );
+      if (res.ok) {
+        const json = (await res.json()) as { result: { slug: string }[] };
+        const hidden = new Set(["india-s-political-landscape-in-2026-key-issues-shaping-public-debate"]);
+        blogPages = (json.result ?? [])
+          .filter((r) => r.slug && !hidden.has(r.slug))
+          .map((r) => ({
+            url: `${base}/blog/${r.slug}`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.7,
+          }));
+      }
+    }
+  } catch {
+    // sitemap without blog detail pages
+  }
+
+  return [...statics, ...productPages, ...concernPages, ...typePages, ...categoryPages, ...cityPages, ...blogPages];
 }

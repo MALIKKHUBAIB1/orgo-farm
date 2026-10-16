@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Visit } from "../models/Visit.js";
 import { createRateLimiter } from "../middleware/security.js";
+import { ah } from "../middleware/asyncHandler.js";
 import {
   clientIp,
   normalizeIp,
@@ -22,7 +23,7 @@ const trackLimiter = createRateLimiter({
 
 const PATH_RX = /^\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=%]*$/;
 
-router.post("/", trackLimiter, async (req, res) => {
+router.post("/", trackLimiter, ah(async (req, res) => {
   try {
     const ua = String(req.headers["user-agent"] || "");
     // Server monitors / curl with no browser UA are not visitors.
@@ -69,6 +70,6 @@ router.post("/", trackLimiter, async (req, res) => {
     // Never break the storefront for analytics.
     res.json({ ok: true });
   }
-});
+}));
 
 export default router;

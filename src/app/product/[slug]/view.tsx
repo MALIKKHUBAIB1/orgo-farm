@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Heart, Minus, Plus, MessageCircle, Star, Truck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Heart, Minus, Plus, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { inr, WHATSAPP_NUMBER, type Product } from "@/lib/orgo/products";
 import { SITE_URL } from "@/lib/orgo/api";
+import { getReviews, summarizeReviews, type Review } from "@/lib/orgo/reviews";
 import { useShop } from "@/lib/orgo/store";
 import { resolveImage } from "@/lib/orgo/image";
 import { ProductCard } from "@/components/orgo/ProductCard";
+import { ProductReviews, Stars } from "@/components/orgo/ProductReviews";
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +22,19 @@ export function ProductView({ product, related }: { product: Product; related: P
   const { addToCart, toggleWishlist, wishlist } = useShop();
   const [qty, setQty] = useState(1);
   const [active, setActive] = useState(0);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const wished = wishlist.includes(product.slug);
+  const summary = summarizeReviews(reviews);
+
+  useEffect(() => {
+    let live = true;
+    getReviews(product.slug).then((r) => {
+      if (live) setReviews(r);
+    });
+    return () => {
+      live = false;
+    };
+  }, [product.slug]);
 
   const waText = encodeURIComponent(
     `Hello ORGO FARM! I'd like to order:\n\nProduct: ${product.name} (${product.size})\nQuantity: ${qty}\nPrice: ${inr(
@@ -70,12 +84,14 @@ export function ProductView({ product, related }: { product: Product; related: P
             </span>
           ) : null}
           <h1 className="mt-4 text-4xl leading-tight text-primary md:text-5xl">{product.name}</h1>
-          <div className="mt-3 flex items-center gap-2 text-terracotta">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="size-3.5 fill-current" />
-            ))}
-            <span className="text-xs text-muted-foreground">Placeholder rating · reviews coming soon</span>
-          </div>
+          <a href="#reviews" className="mt-3 flex items-center gap-2">
+            <Stars value={summary.count ? summary.avg : 5} />
+            <span className="text-xs text-muted-foreground">
+              {summary.count
+                ? `${summary.avg.toFixed(1)} · ${summary.count} review${summary.count === 1 ? "" : "s"}`
+                : "No reviews yet · be the first"}
+            </span>
+          </a>
 
           <div className="mt-6 flex items-baseline gap-3">
             <span className="font-display text-3xl">{inr(product.price)}</span>
@@ -152,6 +168,15 @@ export function ProductView({ product, related }: { product: Product; related: P
             ))}
           </Accordion>
         </div>
+      </div>
+
+      <div id="reviews" className="scroll-mt-24">
+        <ProductReviews
+          slug={product.slug}
+          productName={product.name}
+          reviews={reviews}
+          onAdd={(r) => setReviews((cur) => [r, ...cur])}
+        />
       </div>
 
       <section className="border-t border-border">

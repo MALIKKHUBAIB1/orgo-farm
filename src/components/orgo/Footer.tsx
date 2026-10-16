@@ -26,6 +26,7 @@ const cols = [
       { label: "Our Story", to: "/about" },
       { label: "Our Philosophy", to: "/about" },
       { label: "Why ORGO FARM", to: "/about" },
+      { label: "Blog", to: "/blog" },
     ],
   },
   {
@@ -109,9 +110,10 @@ export function Footer() {
     <footer className="mt-24 border-t border-border bg-primary text-primary-foreground">
       <div className="mx-auto grid max-w-[1280px] gap-12 px-4 py-16 md:grid-cols-[1.4fr_repeat(4,1fr)] md:px-8">
         <div>
-          <img src={img.logo} alt="ORGO FARM logo" className="size-16 rounded-full object-cover" />
-          <p className="mt-5 font-display text-2xl tracking-[0.18em]">ORGO FARM</p>
-          <p className="mt-2 text-sm text-primary-foreground/70">Pure & Natural Skincare Products</p>
+          <span className="grid size-24 place-items-center overflow-hidden rounded-full bg-[#FCF8F1] p-3">
+            <img src={img.logo} alt="ORGO FARM logo" className="max-h-full max-w-full object-contain" />
+          </span>
+          <p className="mt-5 text-sm text-primary-foreground/70">Pure & Natural Skincare Products</p>
           <p className="mt-5 flex max-w-xs items-start gap-2 text-sm leading-relaxed text-primary-foreground/75">
             <MapPin className="mt-0.5 size-4 shrink-0" />
             <span>{BUSINESS_ADDRESS}</span>

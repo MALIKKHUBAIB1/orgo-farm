@@ -9,7 +9,7 @@ export const img = {
   lid: "https://ik.imagekit.io/hliyltsjxz/orgo/lid.jpg",
   curationCard: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-card.jpg",
   curationTiers: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-tiers.jpg",
-  logo: "https://ik.imagekit.io/hliyltsjxz/orgo/logo.jpg",
+  logo: "/orgofarmlogo.jpeg",
 };
 
 // Business WhatsApp (orders are currently taken on WhatsApp: +91 92362 06988).

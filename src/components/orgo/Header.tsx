@@ -14,6 +14,7 @@ const nav = [
   { label: "Shop", to: "/shop" },
   { label: "Collections", to: "/collections" },
   { label: "Our Story", to: "/about" },
+  { label: "Blog", to: "/blog" },
   { label: "How To Use", to: "/how-to-use" },
   { label: "Contact", to: "/contact" },
 ] as const;
@@ -174,8 +175,7 @@ export function Header({ products }: { products: Product[] }) {
           </button>
 
           <Link href="/" className="flex items-center gap-3">
-            <img src={img.logo} alt="ORGO FARM logo" className="size-10 rounded-full object-cover" />
-            <span className="hidden font-display text-xl tracking-[0.18em] text-primary sm:block">ORGO FARM</span>
+            <img src={img.logo} alt="ORGO FARM logo" className="h-12 w-auto md:h-14" />
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex">
@@ -250,7 +250,7 @@ export function Header({ products }: { products: Product[] }) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
-                <img src={img.logo} alt="ORGO FARM" className="size-10 rounded-full object-cover" />
+                <img src={img.logo} alt="ORGO FARM" className="h-12 w-auto" />
                 <button onClick={() => setMenu(false)} aria-label="Close menu">
                   <X className="size-5" />
                 </button>

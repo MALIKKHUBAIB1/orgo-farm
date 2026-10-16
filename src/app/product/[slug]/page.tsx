@@ -5,6 +5,21 @@ import { findProduct, products as fallbackProducts, type Product } from "@/lib/o
 import { productFaqJsonLd, productJsonLd, breadcrumbJsonLd } from "@/lib/orgo/schema";
 import { ProductView } from "./view";
 
+type ReviewRow = { rating: number };
+
+async function loadReviews(slug: string): Promise<ReviewRow[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/reviews/${encodeURIComponent(slug)}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const data: unknown = await res.json();
+    return Array.isArray(data) ? (data as ReviewRow[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 async function loadProduct(slug: string): Promise<Product | null> {
   return apiGet<Product | null>(`/api/products/${encodeURIComponent(slug)}`, findProduct(slug) ?? null);
 }
@@ -64,18 +79,29 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [product, all] = await Promise.all([
+  const [product, all, reviewRows] = await Promise.all([
     loadProduct(slug),
     apiGet<Product[]>("/api/products", fallbackProducts),
+    loadReviews(slug),
   ]);
   if (!product) notFound();
   const related = all.filter((p) => p.slug !== product.slug);
   const url = `${SITE_URL}/product/${slug}`;
+  const validRatings = reviewRows
+    .map((r) => r.rating)
+    .filter((n) => Number.isFinite(n) && n >= 1 && n <= 5);
+  const aggregate =
+    validRatings.length > 0
+      ? {
+          ratingValue: Math.round((validRatings.reduce((s, n) => s + n, 0) / validRatings.length) * 10) / 10,
+          reviewCount: validRatings.length,
+        }
+      : undefined;
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product, url)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(product, url, undefined, aggregate)) }}
       />
       <script
         type="application/ld+json"
