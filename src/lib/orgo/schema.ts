@@ -1,7 +1,7 @@
 import { API_URL, SITE_URL } from "./api";
 import type { Product } from "./products";
 
-export const BUSINESS_ADDRESS = "Peshkar Rd, Sisamau, Colonelganj, Kanpur, Uttar Pradesh 208001";
+export const BUSINESS_ADDRESS = "Sector 61, Near Metro Station, Noida, Uttar Pradesh 201307";
 
 export function organizationJsonLd() {
   return {
@@ -15,10 +15,10 @@ export function organizationJsonLd() {
     sameAs: ["https://instagram.com/orgo.farm_"],
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Peshkar Rd, Sisamau, Colonelganj",
-      addressLocality: "Kanpur",
+      streetAddress: "Sector 61, Near Metro Station",
+      addressLocality: "Noida",
       addressRegion: "Uttar Pradesh",
-      postalCode: "208001",
+      postalCode: "201307",
       addressCountry: "IN",
     },
     contactPoint: {

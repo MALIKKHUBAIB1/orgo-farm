@@ -9,6 +9,8 @@ export const img = {
   lid: "https://ik.imagekit.io/hliyltsjxz/orgo/lid.jpg",
   curationCard: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-card.jpg",
   curationTiers: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-tiers.jpg",
+  soapCollection: "/soap/WhatsApp Image 2026-10-23 at 11.31.57 PM (1).jpeg",
+  soapCloseup: "/soap/WhatsApp Image 2026-10-23 at 11.31.58 PM (3).jpeg",
   logo: "/orgofarmlogo.jpeg",
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "motion/react";
 import { Heart, Star } from "lucide-react";
 import { toast } from "sonner";
 import { inr, type Product } from "@/lib/orgo/products";
@@ -24,21 +25,31 @@ export function ProductCard({ product, compact = false }: { product: Product; co
         </Link>
 
         {product.badge ? (
-          <span className="absolute left-3 top-3 bg-primary px-3 py-1 text-[10px] tracking-[0.18em] text-primary-foreground">
+          <motion.span
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="absolute left-3 top-3 animate-pulse-soft bg-primary px-3 py-1 text-[10px] tracking-[0.18em] text-primary-foreground"
+          >
             {product.badge}
-          </span>
+          </motion.span>
         ) : null}
 
-        <button
+        <motion.button
           aria-label="Add to wishlist"
+          whileTap={{ scale: 0.75 }}
+          animate={wished ? { scale: [1, 1.4, 1] } : {}}
+          transition={{ duration: 0.4 }}
           onClick={() => {
             toggleWishlist(product.slug);
             toast(wished ? "Removed from wishlist" : "Saved to wishlist");
           }}
-          className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-card/90 text-foreground/70 transition-colors hover:text-rose"
+          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full transition-colors ${
+            wished ? "bg-rose/10" : "bg-card/90"
+          } text-foreground/70 hover:text-rose`}
         >
-          <Heart className={`size-4 ${wished ? "fill-rose text-rose" : ""}`} />
-        </button>
+          <Heart className={`size-4 transition-all ${wished ? "fill-rose text-rose" : ""}`} />
+        </motion.button>
 
         <div className="pointer-events-none absolute inset-x-3 bottom-3 flex translate-y-3 gap-2 opacity-0 transition-all duration-500 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
           <button
@@ -46,7 +57,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
               addToCart(product.slug);
               toast.success(`${product.name} added to cart`);
             }}
-            className="flex-1 bg-primary py-3 text-[10px] tracking-[0.2em] text-primary-foreground"
+            className="shimmer flex-1 bg-primary py-3 text-[10px] tracking-[0.2em] text-primary-foreground transition-transform duration-300 hover:-translate-y-0.5"
           >
             ADD TO CART
           </button>

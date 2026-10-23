@@ -22,6 +22,12 @@ import { getHeroSettings, putHeroSettings } from "../controllers/heroSettingsCon
 import { getVisitAnalytics } from "../controllers/analyticsController.js";
 import { runNewsletterCron } from "../utils/newsletter.js";
 import { adminDeleteReview, adminListReviews } from "../controllers/reviewController.js";
+import {
+  adminCreateCoupon,
+  adminDeleteCoupon,
+  adminListCoupons,
+  adminUpdateCoupon,
+} from "../controllers/couponController.js";
 import { ah } from "../middleware/asyncHandler.js";
 
 const router = Router();
@@ -45,6 +51,11 @@ router.get("/testimonials", ah(async (req, res) => {
 router.post("/testimonials", ah(adminCreateTestimonial));
 router.patch("/testimonials/:id", ah(adminUpdateTestimonial));
 router.delete("/testimonials/:id", ah(adminDeleteTestimonial));
+
+router.get("/coupons", ah(adminListCoupons));
+router.post("/coupons", ah(adminCreateCoupon));
+router.patch("/coupons/:id", ah(adminUpdateCoupon));
+router.delete("/coupons/:id", ah(adminDeleteCoupon));
 
 router.get("/stats", ah(async (req, res) => {
   try {

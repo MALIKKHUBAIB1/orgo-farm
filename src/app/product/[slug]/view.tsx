@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Heart, Minus, Plus, MessageCircle, Truck } from "lucide-react";
+import { ArrowRight, Heart, Minus, Plus, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
-import { inr, WHATSAPP_NUMBER, type Product } from "@/lib/orgo/products";
+import { img, inr, WHATSAPP_NUMBER, type Product } from "@/lib/orgo/products";
 import { SITE_URL } from "@/lib/orgo/api";
 import { getReviews, summarizeReviews, type Review } from "@/lib/orgo/reviews";
 import { useShop } from "@/lib/orgo/store";
@@ -25,6 +25,10 @@ export function ProductView({ product, related }: { product: Product; related: P
   const [reviews, setReviews] = useState<Review[]>([]);
   const wished = wishlist.includes(product.slug);
   const summary = summarizeReviews(reviews);
+  const isSoapBar = product.type.toLowerCase().includes("scrub");
+  const gallery = isSoapBar
+    ? [...new Set([...product.gallery, img.soapCollection, img.soapCloseup])]
+    : product.gallery;
 
   useEffect(() => {
     let live = true;
@@ -63,13 +67,18 @@ export function ProductView({ product, related }: { product: Product; related: P
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={resolveImage(product.gallery[active])}
+            src={resolveImage(gallery[active])}
             alt={product.name}
             className="aspect-[4/5] w-full object-cover soft-shadow"
           />
           <div className="mt-4 grid grid-cols-4 gap-3">
-            {product.gallery.map((g, i) => (
-              <button key={g + i} onClick={() => setActive(i)} className={i === active ? "ring-1 ring-primary" : ""}>
+            {gallery.map((g, i) => (
+              <button
+                key={g + i}
+                onClick={() => setActive(i)}
+                aria-label={`View product image ${i + 1}`}
+                className={i === active ? "ring-1 ring-primary" : ""}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={resolveImage(g)} alt="" className="aspect-square w-full object-cover" />
               </button>
@@ -102,6 +111,21 @@ export function ProductView({ product, related }: { product: Product; related: P
           </div>
 
           <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+
+          {isSoapBar ? (
+            <a
+              href="/soap/Natural%20Soap%20Presentation%20(1).pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 flex items-center justify-between gap-4 border border-border bg-card px-4 py-3 text-sm transition-colors hover:border-primary"
+            >
+              <span>
+                <span className="block font-medium text-primary">Explore the natural soap catalogue</span>
+                <span className="mt-1 block text-xs text-muted-foreground">See the full range and gift-box options.</span>
+              </span>
+              <ArrowRight className="size-4 shrink-0 text-accent" />
+            </a>
+          ) : null}
 
           <ul className="mt-6 space-y-2 text-sm">
             {product.benefits.map((b) => (

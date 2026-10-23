@@ -9,8 +9,8 @@ export function Philosophy() {
     <section className="mx-auto grid max-w-[1280px] items-center gap-12 px-4 py-20 md:px-8 md:py-28 lg:grid-cols-2 lg:gap-20">
       <Reveal>
         <img
-          src={img.roseBar}
-          alt="Handmade ORGO FARM rose soap bar with dried petals"
+          src={img.soapCloseup}
+          alt="Close-up of ORGO FARM handmade natural soap bars"
           className="aspect-[4/5] w-full rounded-b-[999px] object-cover soft-shadow"
         />
       </Reveal>

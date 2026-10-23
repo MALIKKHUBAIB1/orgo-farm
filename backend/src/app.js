@@ -16,6 +16,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import instagramRoutes from "./routes/instagramRoutes.js";
@@ -65,6 +66,7 @@ export function createApp() {
   app.use("/api/uploads", uploadRoutes);
   app.use("/api/subscriptions", subscriptionRoutes);
   app.use("/api/reviews", reviewRoutes);
+  app.use("/api/coupons", couponRoutes);
   app.use("/api/visits", visitRoutes);
   app.use("/api/faqs", faqRoutes);
   app.use("/api/instagram", instagramRoutes);

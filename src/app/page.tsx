@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/orgo/home/Hero";
+import { Marquee } from "@/components/orgo/home/Marquee";
 import { Favorites } from "@/components/orgo/home/Favorites";
+import { SoapSpotlight } from "@/components/orgo/home/SoapSpotlight";
 import { Curations } from "@/components/orgo/home/Curations";
-import { Philosophy } from "@/components/orgo/home/Philosophy";
 import { Why } from "@/components/orgo/home/Why";
 import { Ingredients } from "@/components/orgo/home/Ingredients";
 import { HowToUse } from "@/components/orgo/home/HowToUse";
@@ -33,9 +34,10 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <Marquee />
       <Favorites />
+      <SoapSpotlight />
       <Curations />
-      <Philosophy />
       <Why />
       <Ingredients />
       <HowToUse />

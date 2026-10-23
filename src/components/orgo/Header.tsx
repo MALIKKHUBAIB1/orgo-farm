@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Heart, Home, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Check, Copy, Heart, Home, Menu, Search, ShoppingBag, Ticket, User, X } from "lucide-react";
 import { img, inr, type Product } from "@/lib/orgo/products";
 import { resolveImage } from "@/lib/orgo/image";
 import { useShop } from "@/lib/orgo/store";
+import { getActiveCoupons, type Coupon } from "@/lib/orgo/coupons";
 
 const nav = [
   { label: "Home", to: "/" },
@@ -19,29 +20,56 @@ const nav = [
   { label: "Contact", to: "/contact" },
 ] as const;
 
-const messages = ["100% NATURAL • PURE • HANDMADE", "FREE STANDARD SHIPPING ACROSS INDIA"];
-
+// Static top bar — sirf sabse naya live coupon dikhta hai (rotation nahi).
+// Change karne ke liye admin panel se naya coupon create/pause karein.
 function Announcement() {
-  const [i, setI] = useState(0);
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [copied, setCopied] = useState(false);
+
   useEffect(() => {
-    const t = setInterval(() => setI((v) => (v + 1) % messages.length), 4200);
-    return () => clearInterval(t);
+    let cancelled = false;
+    (async () => {
+      const coupons = await getActiveCoupons();
+      if (!cancelled && coupons.length) setCoupon(coupons[0]);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  const copyCode = async () => {
+    if (!coupon) return;
+    try {
+      await navigator.clipboard.writeText(coupon.code);
+    } catch {
+      // Clipboard blocked — ignore.
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
   return (
     <div className="bg-primary text-primary-foreground">
-      <div className="mx-auto flex h-9 max-w-[1280px] items-center justify-center overflow-hidden px-4">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={i}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.5 }}
-            className="eyebrow"
-          >
-            {messages[i]}
-          </motion.p>
-        </AnimatePresence>
+      <div className="mx-auto flex min-h-12 max-w-[1280px] flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-1.5 text-center">
+        {coupon ? (
+          <>
+            <Ticket className="size-4 shrink-0" />
+            <p className="eyebrow">
+              {coupon.message} · USE CODE{" "}
+              <span className="font-mono tracking-[0.2em] underline underline-offset-4">{coupon.code}</span>
+            </p>
+            <button
+              type="button"
+              onClick={copyCode}
+              aria-label={copied ? "Code copied" : `Copy code ${coupon.code}`}
+              className="grid size-6 shrink-0 place-items-center rounded-full transition-colors hover:bg-primary-foreground/15"
+            >
+              {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            </button>
+          </>
+        ) : (
+          <p className="eyebrow">FREE STANDARD SHIPPING ACROSS INDIA</p>
+        )}
       </div>
     </div>
   );
@@ -215,14 +243,20 @@ export function Header({ products }: { products: Product[] }) {
             <Link href="/cart" aria-label="Cart" className="relative">
               <ShoppingBag className="size-[18px]" />
               {count ? (
-                <span className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                <motion.span
+                  key={count}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 520, damping: 16 }}
+                  className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full bg-primary text-[10px] text-primary-foreground"
+                >
                   {count}
-                </span>
+                </motion.span>
               ) : null}
             </Link>
             <Link
               href="/shop"
-              className="hidden bg-primary px-5 py-2.5 text-[11px] tracking-[0.2em] text-primary-foreground transition-opacity hover:opacity-90 md:block"
+              className="shimmer hidden bg-primary px-5 py-2.5 text-[11px] tracking-[0.2em] text-primary-foreground md:block"
             >
               SHOP NOW
             </Link>

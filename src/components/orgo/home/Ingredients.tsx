@@ -18,7 +18,7 @@ export function Ingredients() {
               src={ing.image}
               alt={ing.name}
               loading="lazy"
-              className="mx-auto aspect-square w-full max-w-[180px] rounded-full object-cover soft-shadow"
+              className="mx-auto aspect-square w-full max-w-[180px] rounded-full object-cover soft-shadow transition-all duration-500 hover:scale-105 hover:lift-shadow"
             />
             <h3 className="mt-5 font-display text-2xl text-primary">{ing.name}</h3>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{ing.text}</p>

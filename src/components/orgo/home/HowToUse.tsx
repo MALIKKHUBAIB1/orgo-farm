@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { steps } from "@/lib/orgo/products";
 import { Reveal, SectionHeading } from "@/components/orgo/Reveal";
 
@@ -24,28 +25,49 @@ export function HowToUse({ hideSteps = false }: { hideSteps?: boolean }) {
               subtitle="A simple weekly ritual for brightening and tightening skin."
             />
 
-            <ol className="mt-14 grid gap-px overflow-hidden border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
-              {steps.map((s, i) => (
-                <Reveal key={s.n} delay={i * 0.05}>
-                  <li className="h-full bg-card p-8">
-                    <span className="font-display text-4xl text-beige">{s.n}</span>
-                    <h3 className="mt-3 font-display text-2xl text-primary">{s.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
-                  </li>
-                </Reveal>
-              ))}
-            </ol>
+            {/* Journey timeline — desktop pe center line, steps alternate left/right */}
+            <div className="relative mx-auto mt-16 max-w-4xl">
+              <div className="absolute bottom-4 left-[27px] top-4 w-px bg-gradient-to-b from-sage/50 via-sage/25 to-transparent md:left-1/2" />
+
+              <ol className="space-y-10 md:space-y-16">
+                {steps.map((s, i) => {
+                  const right = i % 2 === 1;
+                  return (
+                    <Reveal key={s.n} delay={i * 0.05}>
+                      <li className="relative pl-20 md:min-h-28 md:pl-0">
+                        {/* Number bubble — hamesha line ke exactly upar */}
+                        <span className="group absolute left-0 top-0 z-10 grid size-14 cursor-default place-items-center rounded-full border border-border bg-card font-display text-xl text-primary soft-shadow transition-all duration-500 hover:scale-110 hover:border-primary hover:bg-primary hover:text-primary-foreground md:left-1/2 md:-translate-x-1/2">
+                          {s.n}
+                        </span>
+
+                        {/* Content card — left/right alternate */}
+                        <div
+                          className={`rounded-sm border border-border bg-card/70 p-6 transition-all duration-500 hover:-translate-y-1 hover:lift-shadow md:w-[calc(50%-3.5rem)] ${
+                            right ? "md:ml-auto" : "md:mr-auto"
+                          }`}
+                        >
+                          <h3 className="font-display text-2xl text-primary">{s.title}</h3>
+                          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.text}</p>
+                        </div>
+                      </li>
+                    </Reveal>
+                  );
+                })}
+              </ol>
+            </div>
           </>
         ) : null}
 
         <Reveal delay={0.1}>
-          <div className="mt-10 grid gap-8 bg-card p-8 md:grid-cols-2 md:p-12">
+          <div className="mt-14 grid gap-8 bg-card p-8 md:grid-cols-2 md:p-12">
             <div>
               <p className="eyebrow text-accent">Tips For Best Results</p>
               <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
                 {tips.map((t) => (
                   <li key={t} className="flex gap-3">
-                    <span className="mt-2 size-1 rounded-full bg-accent" />
+                    <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent/15">
+                      <Check className="size-3 text-accent" strokeWidth={3} />
+                    </span>
                     {t}
                   </li>
                 ))}
