@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { toast } from "sonner";
-import { inr } from "@/lib/orgo/products";
+import { displayProductImage, inr } from "@/lib/orgo/products";
 import { useShop } from "@/lib/orgo/store";
 import { useCatalog } from "@/lib/orgo/catalog";
 import { resolveImage } from "@/lib/orgo/image";
@@ -31,7 +31,7 @@ export function WishlistView() {
             <div key={p!.slug} className="bg-card">
               <Link href={`/product/${p!.slug}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={resolveImage(p.image)} alt={p.name} className="aspect-[4/5] w-full object-cover" />
+                <img src={resolveImage(displayProductImage(p))} alt={p.name} className="aspect-[4/5] w-full object-cover" />
               </Link>
               <div className="p-4">
                 <h2 className="font-display text-xl text-primary">{p!.name}</h2>

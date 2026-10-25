@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, Minus, Plus, Trash2, Truck } from "lucide-react";
-import { inr, WHATSAPP_NUMBER } from "@/lib/orgo/products";
+import { displayProductImage, inr, WHATSAPP_NUMBER } from "@/lib/orgo/products";
+import { CouponBox } from "@/components/orgo/CouponBox";
+import { couponDiscount, type AppliedCoupon } from "@/lib/orgo/coupons";
 import { useShop } from "@/lib/orgo/store";
 import { useCatalog } from "@/lib/orgo/catalog";
 import { resolveImage } from "@/lib/orgo/image";
@@ -10,16 +13,19 @@ import { resolveImage } from "@/lib/orgo/image";
 export function CartView() {
   const { cart, setQty, removeFromCart, toggleWishlist } = useShop();
   const { products } = useCatalog();
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const lines = cart.flatMap((l) => {
     const product = products.find((p) => p.slug === l.slug);
     return product ? [{ ...l, product }] : [];
   });
   const subtotal = lines.reduce((s, l) => s + l.product.price * l.qty, 0);
+  const discount = appliedCoupon ? couponDiscount(appliedCoupon.coupon, subtotal, 0) : 0;
+  const total = Math.max(0, subtotal - discount);
 
   const waText = encodeURIComponent(
     `Hello ORGO FARM! I'd like to order:\n\n${lines
       .map((l, i) => `${i + 1}. ${l.product.name} (${l.product.size}) × ${l.qty} — ${inr(l.product.price * l.qty)}`)
-      .join("\n")}\n\nSubtotal: ${inr(subtotal)}\nShipping: FREE\n\nName:\nDelivery address:\nPhone:`,
+      .join("\n")}\n\nSubtotal: ${inr(subtotal)}${appliedCoupon ? `\nCoupon: ${appliedCoupon.coupon.code}` : ""}\nDiscount: ${inr(discount)}\nShipping: FREE\nTotal: ${inr(total)}\n\nName:\nDelivery address:\nPhone:`,
   );
 
   return (
@@ -39,7 +45,7 @@ export function CartView() {
             {lines.map((l) => (
               <div key={l.slug} className="flex gap-5 py-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={resolveImage(l.product.image)} alt={l.product.name} className="size-28 object-cover" />
+                <img src={resolveImage(displayProductImage(l.product))} alt={l.product.name} className="size-28 object-cover" />
                 <div className="flex-1">
                   <h2 className="font-display text-xl text-primary">{l.product.name}</h2>
                   <p className="text-xs text-muted-foreground">{l.product.size}</p>
@@ -79,13 +85,20 @@ export function CartView() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">Discount</dt>
-                <dd>—</dd>
+                <dd>{discount ? `−${inr(discount)}` : "—"}</dd>
               </div>
               <div className="flex justify-between border-t border-border pt-4 font-display text-xl">
                 <dt>Total</dt>
-                <dd>{inr(subtotal)}</dd>
+                <dd>{inr(total)}</dd>
               </div>
             </dl>
+            <CouponBox
+              subtotal={subtotal}
+              shippingFee={0}
+              applied={appliedCoupon}
+              onApply={setAppliedCoupon}
+              onRemove={() => setAppliedCoupon(null)}
+            />
             {/* TEMP: checkout disabled while orders run on WhatsApp.
                 Re-enable when online payment integration ships. */}
             <a

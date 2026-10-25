@@ -11,7 +11,19 @@ export const metadata: Metadata = {
   keywords: ["buy natural skincare India", "face mask online", "scrub bars", "handmade soap", "ORGO FARM shop"],
 };
 
-export default async function ShopPage() {
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { category } = await searchParams;
+  const initialCategory = typeof category === "string" && category ? category : null;
   const products = await apiGet<Product[]>("/api/products", fallbackProducts);
-  return <ShopView products={products} />;
+  return (
+    <ShopView
+      key={initialCategory ?? "all"}
+      products={products}
+      initialCategory={initialCategory}
+    />
+  );
 }

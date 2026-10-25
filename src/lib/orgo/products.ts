@@ -2,7 +2,7 @@
 export const img = {
   facePack: "https://ik.imagekit.io/hliyltsjxz/orgo/face-pack.jpg",
   lemonBar: "https://ik.imagekit.io/hliyltsjxz/orgo/lemon-bar.jpg",
-  roseBar: "https://ik.imagekit.io/hliyltsjxz/orgo/rose-bar.jpg",
+  roseBar: "/rose4.jpeg",
   barsPackaged: "https://ik.imagekit.io/hliyltsjxz/orgo/bars-packaged.jpg",
   collection: "https://ik.imagekit.io/hliyltsjxz/orgo/collection.jpg",
   howToUse: "https://ik.imagekit.io/hliyltsjxz/orgo/how-to-use.jpg",
@@ -12,6 +12,12 @@ export const img = {
   soapCollection: "/soap/WhatsApp Image 2026-10-23 at 11.31.57 PM (1).jpeg",
   soapCloseup: "/soap/WhatsApp Image 2026-10-23 at 11.31.58 PM (3).jpeg",
   logo: "/orgofarmlogo.jpeg",
+  curationBronze: "/bronze.jpeg",
+  curationSilver: "/silver.jpeg",
+  curationGold: "/golds.jpeg",
+  roseBottle: "/rose.jpeg",
+  rosePack: "/rose3.jpeg",
+  roseSoap: "/rose2.jpeg",
 };
 
 // Business WhatsApp (orders are currently taken on WhatsApp: +91 92362 06988).
@@ -40,6 +46,20 @@ export type Product = {
   inStock: boolean;
   featured: boolean;
 };
+
+export function displayProductImage(product: Pick<Product, "slug" | "image">): string {
+  return product.slug === "rose-scrub-bar" ? img.roseBar : product.image;
+}
+
+export function displayProductGallery(product: Pick<Product, "slug" | "gallery">): string[] {
+  if (product.slug === "rose-scrub-bar") {
+    return [...new Set([img.roseBar, ...product.gallery])];
+  }
+  if (product.slug === "pure-rose-water") {
+    return [...new Set([...product.gallery, img.roseBar])];
+  }
+  return product.gallery;
+}
 
 export const products: Product[] = [
   {
@@ -118,7 +138,7 @@ export const products: Product[] = [
     howToUse: "Lather on damp skin, massage gently, rinse well. Follow with a moisturizer.",
     suitableFor: "All skin types, especially dry skin. For external use only.",
     image: img.roseBar,
-    gallery: [img.roseBar, img.barsPackaged, img.collection],
+    gallery: [img.roseBar, img.roseSoap],
     inStock: true,
     featured: true,
   },
@@ -145,9 +165,37 @@ export const products: Product[] = [
     howToUse: "Lather on damp skin, massage in circular motions for 1–2 minutes, rinse well.",
     suitableFor: "All skin types. For external use only. Patch test recommended.",
     image: img.barsPackaged,
-    gallery: [img.barsPackaged, img.collection, img.lid],
+    gallery: [img.collection, img.lid],
     inStock: true,
     featured: true,
+  },
+  {
+    slug: "pure-rose-water",
+    name: "Pure Rose Water",
+    size: "100 ml",
+    price: 220,
+    badge: "BESTSELLER",
+    category: "Face Care",
+    type: "Rose Water / Facial Mist",
+    concerns: ["Dry Skin", "Dullness"],
+    short:
+      "Refresh and hydrate your skin with Orgo Farm Pure Rose Water. A refreshing addition to your daily skincare routine.",
+    description:
+      "ORGO FARM Pure Handcrafted Rose Water\nRefresh, hydrate, and tone your skin with our natural Rose Water. Distilled from fresh rose petals and packaged in a convenient spray bottle, this pure, handcrafted floral mist is the ultimate multi-tasker for your daily skincare routine.",
+    benefits: [
+      "Refreshes the skin",
+      "Helps skin feel hydrated",
+      "Adds a refreshing touch to your skincare routine",
+      "Suitable for daily use, depending on individual skin tolerance",
+    ],
+    ingredients: "Ingredients: Rose Water (Rosa Damascena Flower Water)",
+    howToUse:
+      "SHAKE WELL BEFORE USE\n(All-in-One Multi-Purpose Guide)\n\n1: Prep & Tone\nHold the bottle 5–6 inches away from your face and spritz 2–3 times over clean skin to hydrate, balance pH, and tighten pores. Let it air dry or gently pat it in.\n\n2: Mask Mix\nSpritz or pour directly into your face pack powder to form a smooth, botanical paste instead of plain water.\n\n3: Midday Refresh\nSpray lightly over your face anytime throughout the day to revive dull, tired skin with an instant dewy glow.\n\n4: Makeup Prep & Set\nMist before makeup application to create a plump, hydrated canvas, or spray lightly over finished makeup to melt powdery textures into a natural finish.",
+    suitableFor: "",
+    image: img.roseBottle,
+    gallery: [img.rosePack, img.roseBottle],
+    inStock: true,
+    featured: false,
   },
 ];
 

@@ -124,6 +124,50 @@
   --ring: oklch(0.75 0.06 126 / 50%);
 }
 
+/* Home page: deep botanical tones with a warm, luminous accent. */
+.home-page {
+  --background: oklch(0.17 0.025 145);
+  --foreground: oklch(0.94 0.018 88);
+  --card: oklch(0.22 0.03 145);
+  --card-foreground: oklch(0.94 0.018 88);
+  --popover: oklch(0.22 0.03 145);
+  --popover-foreground: oklch(0.94 0.018 88);
+  --primary: oklch(0.78 0.105 83);
+  --primary-foreground: oklch(0.19 0.03 145);
+  --secondary: oklch(0.27 0.035 145);
+  --secondary-foreground: oklch(0.94 0.018 88);
+  --muted: oklch(0.27 0.03 145);
+  --muted-foreground: oklch(0.76 0.025 94);
+  --accent: oklch(0.73 0.09 130);
+  --accent-foreground: oklch(0.17 0.025 145);
+  --border: oklch(0.86 0.045 92 / 16%);
+  --input: oklch(0.86 0.045 92 / 22%);
+  --ring: oklch(0.78 0.105 83 / 55%);
+  color: var(--foreground);
+  background:
+    radial-gradient(ellipse at 12% 5%, oklch(0.34 0.09 145 / 42%), transparent 38%),
+    radial-gradient(ellipse at 92% 34%, oklch(0.32 0.065 35 / 20%), transparent 34%),
+    linear-gradient(155deg, oklch(0.17 0.025 145), oklch(0.19 0.032 151) 52%, oklch(0.16 0.025 140));
+}
+
+.home-page .paper {
+  background-color: transparent;
+  background-image:
+    radial-gradient(ellipse at 80% 0%, oklch(0.34 0.075 145 / 30%), transparent 52%),
+    linear-gradient(115deg, oklch(0.25 0.035 146 / 72%), oklch(0.19 0.028 146 / 45%));
+}
+
+/* Homepage: shell neeche tak dark rahe — footer ke upar kabhi cream strip na dikhe.
+   (main ka padding pehle footer ka mt-24 leta hai; :has se scope = light pages unaffected) */
+main:has(> .home-page) {
+  background-color: oklch(0.22 0.045 150);
+  padding-bottom: 6rem;
+}
+
+div:has(> main > .home-page) > footer {
+  margin-top: 0;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -188,6 +232,49 @@
       transparent 55%
     ),
     radial-gradient(circle at 85% 10%, color-mix(in oklab, var(--beige) 45%, transparent), transparent 45%);
+}
+
+/* Soft section washes — brand-palette gradients for depth & contrast.
+   Base = var(--background): cream on light pages, deep green on .home-page.
+   Tints are mixed INTO the base (no transparent overlays) so text stays readable. */
+
+@utility wash-sage {
+  background-color: var(--background);
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--sage) 16%, var(--background)) 0%,
+    var(--background) 55%,
+    color-mix(in oklab, var(--gold) 13%, var(--background)) 100%
+  );
+}
+
+@utility wash-blush {
+  background-color: var(--background);
+  background-image: linear-gradient(
+    150deg,
+    color-mix(in oklab, var(--rose) 14%, var(--background)) 0%,
+    var(--background) 55%,
+    color-mix(in oklab, var(--terracotta) 12%, var(--background)) 100%
+  );
+}
+
+@utility wash-warm {
+  background-color: var(--background);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--gold) 16%, var(--background)) 0%,
+    var(--background) 50%,
+    color-mix(in oklab, var(--terracotta) 11%, var(--background)) 100%
+  );
+}
+
+@utility gradient-forest {
+  background-image: linear-gradient(
+    140deg,
+    oklch(0.33 0.055 141),
+    oklch(0.27 0.05 145) 55%,
+    oklch(0.22 0.045 150)
+  );
 }
 
 /* ---------- Motion: keep the farm alive ---------- */

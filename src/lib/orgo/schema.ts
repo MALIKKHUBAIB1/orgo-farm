@@ -1,5 +1,5 @@
 import { API_URL, SITE_URL } from "./api";
-import type { Product } from "./products";
+import { displayProductImage, type Product } from "./products";
 
 export const BUSINESS_ADDRESS = "Sector 61, Near Metro Station, Noida, Uttar Pradesh 201307";
 
@@ -55,7 +55,7 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
 }
 
 export function absoluteImage(p: Product): string | undefined {
-  const raw = p.image || p.gallery?.[0] || "";
+  const raw = displayProductImage(p) || p.gallery?.[0] || "";
   if (!raw) return undefined;
   if (raw.startsWith("http")) return raw;
   if (raw.startsWith("/uploads/")) return `${API_URL}${raw}`;

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <>
+    <div className="home-page">
       <Hero />
       <Marquee />
       <Favorites />
@@ -44,6 +44,6 @@ export default function Home() {
       <Social />
       <Reviews />
       <Newsletter />
-    </>
+    </div>
   );
 }

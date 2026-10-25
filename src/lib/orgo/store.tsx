@@ -10,6 +10,8 @@ export type Order = {
   id: string;
   lines: CartLine[];
   total: number;
+  discount?: number;
+  coupon?: { code: string; message: string };
   name: string;
   address: string;
   city: string;

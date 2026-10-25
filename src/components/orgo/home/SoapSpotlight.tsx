@@ -6,7 +6,7 @@ const catalogueUrl = "/soap/Natural%20Soap%20Presentation%20(1).pdf";
 
 export function SoapSpotlight() {
   return (
-    <section className="paper border-y border-border">
+    <section className="wash-blush border-y border-border">
       <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-4 py-16 md:px-8 md:py-20 lg:grid-cols-2 lg:gap-16">
         <div className="relative">
           <Image

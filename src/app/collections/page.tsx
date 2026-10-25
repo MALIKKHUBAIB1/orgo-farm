@@ -23,8 +23,27 @@ export default function Collections() {
               fragrances.
             </p>
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img.curationTiers} alt="ORGO FARM curation tiers" className="mt-10 w-full object-cover soft-shadow" />
+          {/* Tier photos — user-uploaded Bronze / Silver / Gold curation shots */}
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              { src: img.curationBronze, label: "Bronze" },
+              { src: img.curationSilver, label: "Silver" },
+              { src: img.curationGold, label: "Gold" },
+            ].map((t) => (
+              <figure key={t.label} className="group relative overflow-hidden soft-shadow">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={t.src}
+                  alt={`ORGO FARM ${t.label} curation gift set`}
+                  loading="lazy"
+                  className="aspect-[4/3] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <figcaption className="absolute bottom-3 left-3 bg-background/85 px-3 py-1.5 font-display text-lg text-primary backdrop-blur-sm">
+                  {t.label}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </section>
       <Curations />

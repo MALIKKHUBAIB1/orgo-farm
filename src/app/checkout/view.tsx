@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import { Lock, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/orgo/api";
-import { inr } from "@/lib/orgo/products";
+import { displayProductImage, inr } from "@/lib/orgo/products";
+import { CouponBox } from "@/components/orgo/CouponBox";
+import { couponDiscount, type AppliedCoupon } from "@/lib/orgo/coupons";
 import { useShop } from "@/lib/orgo/store";
 import { useAuth } from "@/lib/orgo/auth";
 import { useCatalog } from "@/lib/orgo/catalog";
@@ -35,6 +37,7 @@ export function CheckoutView() {
   const { products } = useCatalog();
   const router = useRouter();
   const [shipping, setShipping] = useState<"standard" | "fast">("standard");
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [payment, setPayment] = useState<string>(payments[0]!);
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", city: "", state: "", pin: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -75,7 +78,8 @@ export function CheckoutView() {
   });
   const subtotal = lines.reduce((s, l) => s + l.product.price * l.qty, 0);
   const ship = shipping === "fast" ? 100 : 0;
-  const total = subtotal + ship;
+  const discount = appliedCoupon ? couponDiscount(appliedCoupon.coupon, subtotal, ship) : 0;
+  const total = Math.max(0, subtotal + ship - discount);
 
   const effName = user && !editInfo ? user.name || form.name : form.name;
   const effEmail = user && !editInfo ? user.email || form.email : form.email;
@@ -113,7 +117,7 @@ export function CheckoutView() {
               ? saved
               : { address: form.address, city: form.city, state: form.state, pin: form.pin };
           try {
-            const order = await apiFetch<{ id: string }>("/api/orders", {
+            const order = await apiFetch<{ id: string; total: number; discount: number }>("/api/orders", {
               method: "POST",
               body: JSON.stringify({
                 lines: cart.map((l) => ({ slug: l.slug, qty: l.qty })),
@@ -121,12 +125,17 @@ export function CheckoutView() {
                 address: addr,
                 shipping,
                 payment,
+                ...(appliedCoupon ? { couponCode: appliedCoupon.coupon.code } : {}),
               }),
             });
             placeOrder({
               id: order.id,
               lines: cart,
-              total,
+              total: order.total,
+              discount: order.discount,
+              coupon: appliedCoupon
+                ? { code: appliedCoupon.coupon.code, message: appliedCoupon.coupon.message }
+                : undefined,
               name: effName,
               address: addr.address,
               city: addr.city,
@@ -309,7 +318,7 @@ export function CheckoutView() {
             {lines.map((l) => (
               <li key={l.slug} className="flex gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={resolveImage(l.product.image)} alt="" className="size-14 object-cover" />
+                <img src={resolveImage(displayProductImage(l.product))} alt="" className="size-14 object-cover" />
                 <div className="flex-1">
                   <p className="leading-snug">{l.product.name}</p>
                   <div className="mt-1 inline-flex items-center border border-border">
@@ -337,6 +346,13 @@ export function CheckoutView() {
               </li>
             ))}
           </ul>
+          <CouponBox
+            subtotal={subtotal}
+            shippingFee={ship}
+            applied={appliedCoupon}
+            onApply={setAppliedCoupon}
+            onRemove={() => setAppliedCoupon(null)}
+          />
           <dl className="mt-6 space-y-2 border-t border-border pt-5 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
@@ -345,6 +361,10 @@ export function CheckoutView() {
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Shipping</dt>
               <dd>{ship ? inr(ship) : "FREE"}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-muted-foreground">Discount</dt>
+              <dd>{discount ? `−${inr(discount)}` : "—"}</dd>
             </div>
             <div className="flex justify-between border-t border-border pt-3 font-display text-xl">
               <dt>Total</dt>

@@ -12,7 +12,13 @@ const DEFAULT_SORTS = ["Featured", "Newest", "Price Low to High", "Price High to
 const priceCap = (list: Product[]) =>
   list.length ? Math.min(1000, Math.ceil(Math.max(...list.map((p) => p.price)) / 10) * 10) : 300;
 
-export function ShopView({ products }: { products: Product[] }) {
+export function ShopView({
+  products,
+  initialCategory = null,
+}: {
+  products: Product[];
+  initialCategory?: string | null;
+}) {
   const { settings } = useCatalog();
 
   const categories = useMemo(
@@ -37,12 +43,21 @@ export function ShopView({ products }: { products: Product[] }) {
   const cap = priceCap(products);
   const inStockLabel = settings?.inStockLabel || "In stock only";
 
-  const [category, setCategory] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(initialCategory);
   const [concern, setConcern] = useState<string | null>(null);
   const [bucket, setBucket] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState(cap);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<string>(sorts[0] ?? "Featured");
+
+  const pickCategory = (c: string | null) => {
+    setCategory(c);
+    const url = new URL(window.location.href);
+    if (c) url.searchParams.set("category", c);
+    else url.searchParams.delete("category");
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new Event("orgo:category-change"));
+  };
 
   const inBucket = (b: PriceBucket) =>
     maxPrice >= b.min && (b.max === null ? true : maxPrice <= b.max);
@@ -77,11 +92,11 @@ export function ShopView({ products }: { products: Product[] }) {
             Handcrafted in small batches with 100% natural, farm-fresh ingredients.
           </p>
           <div className="mt-8 flex flex-wrap gap-2">
-            <button className={chip(!category)} onClick={() => setCategory(null)}>
+            <button className={chip(!category)} onClick={() => pickCategory(null)}>
               ALL
             </button>
             {categories.map((c) => (
-              <button key={c} className={chip(category === c)} onClick={() => setCategory(c)}>
+              <button key={c} className={chip(category === c)} onClick={() => pickCategory(c)}>
                 {c.toUpperCase()}
               </button>
             ))}

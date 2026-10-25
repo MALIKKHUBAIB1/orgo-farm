@@ -5,14 +5,18 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Check, Copy, Heart, Home, Menu, Search, ShoppingBag, Ticket, User, X } from "lucide-react";
-import { img, inr, type Product } from "@/lib/orgo/products";
+import { displayProductImage, img, inr, type Product } from "@/lib/orgo/products";
 import { resolveImage } from "@/lib/orgo/image";
 import { useShop } from "@/lib/orgo/store";
 import { getActiveCoupons, type Coupon } from "@/lib/orgo/coupons";
 
+// Naya shop category navbar me dikhane ke liye — sirf ye line add karni hai.
+const ROSE_CATEGORY = "Rose Water / Facial Mist";
+
 const nav = [
   { label: "Home", to: "/" },
   { label: "Shop", to: "/shop" },
+  { label: "Rose Water", to: `/shop?category=${encodeURIComponent(ROSE_CATEGORY)}` },
   { label: "Collections", to: "/collections" },
   { label: "Our Story", to: "/about" },
   { label: "Blog", to: "/blog" },
@@ -24,16 +28,36 @@ const nav = [
 // Change karne ke liye admin panel se naya coupon create/pause karein.
 function Announcement() {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [couponLoadFailed, setCouponLoadFailed] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      const coupons = await getActiveCoupons();
-      if (!cancelled && coupons.length) setCoupon(coupons[0]);
-    })();
+    const loadCoupon = async () => {
+      try {
+        const coupons = await getActiveCoupons();
+        if (!cancelled) {
+          setCoupon(coupons[0] ?? null);
+          setCouponLoadFailed(false);
+        }
+      } catch {
+        if (!cancelled) setCouponLoadFailed(true);
+      }
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void loadCoupon();
+    };
+    void loadCoupon();
+    const interval = window.setInterval(loadCoupon, 60_000);
+    window.addEventListener("focus", loadCoupon);
+    window.addEventListener("orgo:coupons-changed", loadCoupon);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
+      window.removeEventListener("focus", loadCoupon);
+      window.removeEventListener("orgo:coupons-changed", loadCoupon);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
@@ -68,7 +92,9 @@ function Announcement() {
             </button>
           </>
         ) : (
-          <p className="eyebrow">FREE STANDARD SHIPPING ACROSS INDIA</p>
+          <p className="eyebrow">
+            {couponLoadFailed ? "COUPON CODE SERVER SE LOAD NAHI HUA" : "FREE STANDARD SHIPPING ACROSS INDIA"}
+          </p>
         )}
       </div>
     </div>
@@ -131,7 +157,7 @@ function SearchOverlay({
                       onClick={onClose}
                       className="flex items-center gap-4 rounded-sm p-2 transition-colors hover:bg-muted"
                     >
-                      <img src={resolveImage(p.image)} alt={p.name} className="size-14 rounded-sm object-cover" />
+                      <img src={resolveImage(displayProductImage(p))} alt={p.name} className="size-14 rounded-sm object-cover" />
                       <span className="flex-1 text-sm">{p.name}</span>
                       <span className="text-sm text-primary">{inr(p.price)}</span>
                     </Link>
@@ -190,8 +216,30 @@ export function Header({ products }: { products: Product[] }) {
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const pathname = usePathname();
-  const navActive = (to: string) =>
-    to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(to);
+  const [activeCat, setActiveCat] = useState<string | null>(null);
+
+  // Shop query chip changes (shop page) + browser back/forward don't trigger
+  // a pathname change, so track ?category via URL + a lightweight event.
+  useEffect(() => {
+    const sync = () => setActiveCat(new URLSearchParams(window.location.search).get("category"));
+    sync();
+    window.addEventListener("popstate", sync);
+    window.addEventListener("orgo:category-change", sync);
+    return () => {
+      window.removeEventListener("popstate", sync);
+      window.removeEventListener("orgo:category-change", sync);
+    };
+  }, [pathname]);
+
+  const navActive = (to: string) => {
+    if (to === "/") return pathname === "/";
+    if (to.startsWith("/shop?")) {
+      const want = decodeURIComponent(to.slice(to.indexOf("?category=") + "?category=".length));
+      return pathname === "/shop" && activeCat === want;
+    }
+    if (to === "/shop") return pathname === "/shop" && activeCat !== ROSE_CATEGORY;
+    return pathname === to || pathname.startsWith(to);
+  };
 
   return (
     <header className="sticky top-0 z-50">
@@ -202,16 +250,16 @@ export function Header({ products }: { products: Product[] }) {
             <Menu className="size-5" />
           </button>
 
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex shrink-0 items-center gap-3">
             <img src={img.logo} alt="ORGO FARM logo" className="h-12 w-auto md:h-14" />
           </Link>
 
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
             {nav.map((n) => (
               <Link
                 key={n.to}
                 href={n.to}
-                className={`relative pb-1 text-[13px] tracking-wide transition-colors ${
+                className={`relative whitespace-nowrap pb-1 text-[12px] tracking-wide transition-colors xl:text-[13px] ${
                   navActive(n.to) ? "text-primary" : "text-foreground/80 hover:text-primary"
                 }`}
               >
@@ -225,7 +273,7 @@ export function Header({ products }: { products: Product[] }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-4">
             <button onClick={() => setSearch(true)} aria-label="Search">
               <Search className="size-[18px]" />
             </button>
@@ -256,7 +304,7 @@ export function Header({ products }: { products: Product[] }) {
             </Link>
             <Link
               href="/shop"
-              className="shimmer hidden bg-primary px-5 py-2.5 text-[11px] tracking-[0.2em] text-primary-foreground md:block"
+              className="shimmer hidden whitespace-nowrap bg-primary px-5 py-2.5 text-[11px] tracking-[0.2em] text-primary-foreground md:block"
             >
               SHOP NOW
             </Link>

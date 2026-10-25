@@ -5,16 +5,16 @@ import { Reveal, SectionHeading } from "@/components/orgo/Reveal";
 import { useCatalog } from "@/lib/orgo/catalog";
 
 const styles: Record<string, string> = {
-  Bronze: "bg-beige text-foreground",
+  Bronze: "bg-beige text-[#3B3425]",
   Silver: "bg-muted text-foreground",
   Gold: "bg-primary text-primary-foreground",
 };
 
-// Hover pe tier card me dikhne wali representative photo.
+// Hover pe tier card me dikhne wali actual curation photo.
 const tierImage: Record<string, string> = {
-  Bronze: img.barsPackaged,
-  Silver: img.collection,
-  Gold: img.soapCollection,
+  Bronze: img.curationBronze,
+  Silver: img.curationSilver,
+  Gold: img.curationGold,
 };
 
 export function Curations() {
@@ -42,17 +42,17 @@ export function Curations() {
                   loading="lazy"
                   className="pointer-events-none absolute inset-0 size-full scale-100 object-cover opacity-0 transition-all duration-700 ease-out group-hover:scale-[1.07] group-hover:opacity-100"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/60 to-foreground/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                <div className="relative flex h-full flex-col transition-colors duration-500 group-hover:text-primary-foreground">
+                <div className="relative flex h-full flex-col transition-colors duration-500 group-hover:text-white">
                   <p className="eyebrow opacity-70">{c.label}</p>
                   <h3
                     className={`mt-4 font-display text-4xl transition-colors duration-500 ${
-                      c.tier === "Gold"
-                        ? "gold-text"
-                        : c.tier === "Silver"
-                          ? "text-accent group-hover:text-primary-foreground"
-                          : "text-terracotta group-hover:text-gold"
+                        c.tier === "Gold"
+                          ? "gold-text"
+                          : c.tier === "Silver"
+                            ? "text-accent group-hover:text-white"
+                            : "text-terracotta group-hover:text-gold"
                     }`}
                   >
                     {c.tier}
@@ -76,7 +76,9 @@ export function Curations() {
                     className={`mt-6 border px-6 py-3.5 text-center text-[10px] tracking-[0.22em] transition-colors duration-300 ${
                       c.tier === "Gold"
                         ? "border-primary-foreground/40 hover:bg-primary-foreground hover:text-primary"
-                        : "border-primary text-primary group-hover:border-primary-foreground/60 group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                        : c.tier === "Bronze"
+                          ? "border-[#6B6150] text-[#3B3425] group-hover:border-white/70 group-hover:text-white hover:bg-[#3B3425] hover:text-white"
+                          : "border-primary text-primary group-hover:border-white/70 group-hover:text-white hover:bg-primary hover:text-primary-foreground"
                     }`}
                   >
                     {c.cta}

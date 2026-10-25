@@ -61,8 +61,9 @@ export function Hero() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="absolute -left-10 top-10 hidden size-56 animate-float-slow rounded-full bg-beige/70 blur-3xl md:block" />
-          <div className="absolute -right-12 bottom-24 hidden size-64 animate-float-slower rounded-full bg-rose/15 blur-3xl md:block" />
+          <div className="absolute -left-10 top-10 hidden size-56 animate-float-slow rounded-full bg-sage/20 blur-3xl md:block" />
+          <div className="absolute -right-12 bottom-24 hidden size-64 animate-float-slower rounded-full bg-rose/20 blur-3xl md:block" />
+          <div className="absolute -left-6 bottom-8 hidden size-40 animate-float-slow rounded-full bg-gold/20 blur-3xl lg:block" />
           <img
             src={img.soapCollection}
             alt="ORGO FARM natural handmade soap collection"
