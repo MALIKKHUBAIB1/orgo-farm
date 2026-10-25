@@ -93,7 +93,7 @@ function Announcement() {
           </>
         ) : (
           <p className="eyebrow">
-            {couponLoadFailed ? "COUPON CODE SERVER SE LOAD NAHI HUA" : "FREE STANDARD SHIPPING ACROSS INDIA"}
+            {couponLoadFailed ? "COUPON CODE COULD NOT BE LOADED" : "FREE STANDARD SHIPPING ACROSS INDIA"}
           </p>
         )}
       </div>
