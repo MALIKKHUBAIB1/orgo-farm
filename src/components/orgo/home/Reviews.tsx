@@ -91,7 +91,7 @@ export function Reviews() {
 
   if (ready && items.length === 0) {
     return (
-      <section className="border-y border-border bg-card">
+      <section className="border-y border-border wash-blush">
         <div className="mx-auto max-w-[1280px] px-4 py-20 md:px-8 md:py-28">
           <SectionHeading eyebrow="Loved By Our Customers" title="Loved By Our Customers" />
           <p className="mt-10 text-center text-sm text-muted-foreground">
@@ -102,8 +102,10 @@ export function Reviews() {
     );
   }
 
+  const single = items.length === 1;
+
   return (
-    <section className="border-y border-border bg-card">
+    <section className="border-y border-border wash-blush">
       <div className="mx-auto max-w-[1280px] px-4 py-20 md:px-8 md:py-28">
         <SectionHeading
           eyebrow={response?.eyebrow ?? "Loved By Our Customers"}
@@ -123,10 +125,16 @@ export function Reviews() {
               {items.map((r, i) => (
                 <div
                   key={r._id ?? i}
-                  className="min-w-0 flex-[0_0_86%] pl-3 first:pl-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+                  className={`min-w-0 ${
+                    single
+                      ? "flex-[0_0_100%]"
+                      : "flex-[0_0_86%] pl-3 first:pl-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+                  }`}
                 >
                   <figure
-                    className="group relative flex h-full flex-col overflow-hidden rounded-sm border border-border bg-background/60 p-8 transition-all duration-500 hover:lift-shadow"
+                    className={`group relative flex h-full flex-col overflow-hidden rounded-sm border border-border bg-background/85 p-8 transition-all duration-500 hover:lift-shadow ${
+                      single ? "mx-auto w-full max-w-xl" : ""
+                    }`}
                   >
                     <Quote
                       className="absolute -top-3 right-5 size-16 rotate-180 text-primary/5 transition-colors duration-500 group-hover:text-primary/12"
@@ -174,45 +182,50 @@ export function Reviews() {
           </div>
 
           {/* Controls */}
-          <div className="mt-10 flex items-center justify-center gap-5">
-            <button
-              onClick={prev}
-              aria-label="Previous reviews"
-              className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-            >
-              <ChevronLeft className="size-4" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              {items.map((_, i) => (
+          {/* Controls — single review pe chhup jate hain */}
+          {!single ? (
+            <>
+              <div className="mt-10 flex items-center justify-center gap-5">
                 <button
-                  key={i}
-                  onClick={() => scrollTo(i)}
-                  aria-label={`Go to review ${i + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-400 ${
-                    selected === i ? "w-7 bg-primary" : "w-1.5 bg-border hover:bg-muted-foreground/50"
-                  }`}
-                />
-              ))}
-            </div>
+                  onClick={prev}
+                  aria-label="Previous reviews"
+                  className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <ChevronLeft className="size-4" />
+                </button>
 
-            <button
-              onClick={next}
-              aria-label="Next reviews"
-              className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
-            >
-              <ChevronRight className="size-4" />
-            </button>
-          </div>
+                <div className="flex items-center gap-2">
+                  {items.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => scrollTo(i)}
+                      aria-label={`Go to review ${i + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-400 ${
+                        selected === i ? "w-7 bg-primary" : "w-1.5 bg-border hover:bg-muted-foreground/50"
+                      }`}
+                    />
+                  ))}
+                </div>
 
-          {/* Pause hint — thoda sa "live" feel */}
-          <p
-            className={`mt-4 text-center text-[10px] tracking-[0.18em] text-muted-foreground transition-opacity duration-300 ${
-              paused ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            PAUSED — MOVE AWAY TO RESUME
-          </p>
+                <button
+                  onClick={next}
+                  aria-label="Next reviews"
+                  className="grid size-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <ChevronRight className="size-4" />
+                </button>
+              </div>
+
+              {/* Pause hint — thoda sa "live" feel */}
+              <p
+                className={`mt-4 text-center text-[10px] tracking-[0.18em] text-muted-foreground transition-opacity duration-300 ${
+                  paused ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                PAUSED — MOVE AWAY TO RESUME
+              </p>
+            </>
+          ) : null}
         </div>
       </div>
     </section>

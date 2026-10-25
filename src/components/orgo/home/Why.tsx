@@ -33,7 +33,7 @@ const smalls = [
 
 export function Why() {
   return (
-    <section className="border-y border-border bg-card">
+    <section className="wash-warm border-y border-border">
       <div className="mx-auto max-w-[1280px] px-4 py-20 md:px-8 md:py-28">
         <SectionHeading
           eyebrow="Trust"
@@ -71,7 +71,7 @@ export function Why() {
             const Icon = it.icon;
             return (
               <Reveal key={it.title} delay={0.08 * (i + 1)}>
-                <div className="group flex h-full flex-col justify-center rounded-sm border border-border bg-background/60 p-7 transition-all duration-500 hover:-translate-y-1 hover:lift-shadow">
+                <div className="group flex h-full flex-col justify-center rounded-sm border border-border bg-background/85 p-7 transition-all duration-500 hover:-translate-y-1 hover:lift-shadow">
                   <span
                     className={`grid size-12 place-items-center rounded-full transition-transform duration-500 group-hover:scale-110 ${it.tint}`}
                   >

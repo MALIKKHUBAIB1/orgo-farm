@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { inr } from "@/lib/orgo/products";
+import { displayProductImage, inr } from "@/lib/orgo/products";
 import { useShop } from "@/lib/orgo/store";
 import { useCatalog } from "@/lib/orgo/catalog";
 import { resolveImage } from "@/lib/orgo/image";
@@ -41,7 +41,7 @@ export function OrderConfirmedView() {
               return (
                 <li key={l.slug} className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={resolveImage(p.image)} alt="" className="size-14 object-cover" />
+                  <img src={resolveImage(displayProductImage(p))} alt="" className="size-14 object-cover" />
                   <span className="flex-1">
                     {p.name} × {l.qty}
                   </span>
@@ -51,6 +51,14 @@ export function OrderConfirmedView() {
             })}
           </ul>
 
+          {lastOrder.discount ? (
+            <div className="mt-6 flex justify-between border-t border-border pt-5 text-sm">
+              <span className="text-muted-foreground">
+                Coupon{lastOrder.coupon?.code ? ` (${lastOrder.coupon.code})` : ""}
+              </span>
+              <span>−{inr(lastOrder.discount)}</span>
+            </div>
+          ) : null}
           <div className="mt-6 flex justify-between border-t border-border pt-5 font-display text-xl">
             <span>Total</span>
             <span>{inr(lastOrder.total)}</span>

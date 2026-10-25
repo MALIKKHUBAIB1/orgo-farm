@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowRight, Heart, Minus, Plus, MessageCircle, Truck } from "lucide-react";
 import { toast } from "sonner";
-import { img, inr, WHATSAPP_NUMBER, type Product } from "@/lib/orgo/products";
+import { displayProductGallery, img, inr, WHATSAPP_NUMBER, type Product } from "@/lib/orgo/products";
 import { SITE_URL } from "@/lib/orgo/api";
 import { getReviews, summarizeReviews, type Review } from "@/lib/orgo/reviews";
 import { useShop } from "@/lib/orgo/store";
@@ -26,9 +26,14 @@ export function ProductView({ product, related }: { product: Product; related: P
   const wished = wishlist.includes(product.slug);
   const summary = summarizeReviews(reviews);
   const isSoapBar = product.type.toLowerCase().includes("scrub");
+  const productGallery = displayProductGallery(product);
+  const visibleProductGallery =
+    product.slug === "lemon-scrub-bar"
+      ? productGallery.filter((_, index) => index !== 1)
+      : productGallery;
   const gallery = isSoapBar
-    ? [...new Set([...product.gallery, img.soapCollection, img.soapCloseup])]
-    : product.gallery;
+    ? [...new Set([...visibleProductGallery, img.soapCollection, img.soapCloseup])]
+    : visibleProductGallery;
 
   useEffect(() => {
     let live = true;

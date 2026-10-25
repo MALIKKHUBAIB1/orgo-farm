@@ -18,6 +18,10 @@ type Draft = {
   endsAt: string;
 };
 
+function notifyCouponsChanged() {
+  window.dispatchEvent(new Event("orgo:coupons-changed"));
+}
+
 const emptyDraft: Draft = {
   code: "",
   message: "",
@@ -30,6 +34,13 @@ const emptyDraft: Draft = {
   endsAt: "",
 };
 
+function dateInputValue(value: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  const part = (number: number) => String(number).padStart(2, "0");
+  return `${date.getFullYear()}-${part(date.getMonth() + 1)}-${part(date.getDate())}`;
+}
+
 function toDraft(c: Coupon): Draft {
   return {
     code: c.code,
@@ -39,8 +50,16 @@ function toDraft(c: Coupon): Draft {
     minOrder: c.minOrder ?? 0,
     maxDiscount: c.maxDiscount ?? 0,
     active: c.active,
-    startsAt: c.startsAt ? c.startsAt.slice(0, 10) : "",
-    endsAt: c.endsAt ? c.endsAt.slice(0, 10) : "",
+    startsAt: dateInputValue(c.startsAt),
+    endsAt: dateInputValue(c.endsAt),
+  };
+}
+
+function toPayload(draft: Draft) {
+  return {
+    ...draft,
+    startsAt: draft.startsAt ? new Date(`${draft.startsAt}T00:00:00`).toISOString() : null,
+    endsAt: draft.endsAt ? new Date(`${draft.endsAt}T23:59:59.999`).toISOString() : null,
   };
 }
 
@@ -56,9 +75,21 @@ function typeLabel(c: Pick<Coupon, "type" | "value" | "maxDiscount">) {
 function statusOf(c: Coupon) {
   if (!c.active) return { label: "Paused", cls: "text-muted-foreground" };
   const now = Date.now();
-  if (c.startsAt && new Date(c.startsAt).getTime() > now)
+  const starts = c.startsAt ? new Date(c.startsAt).getTime() : null;
+  const endDate = c.endsAt ? new Date(c.endsAt) : null;
+  if (
+    endDate &&
+    endDate.getUTCHours() === 0 &&
+    endDate.getUTCMinutes() === 0 &&
+    endDate.getUTCSeconds() === 0 &&
+    endDate.getUTCMilliseconds() === 0
+  ) {
+    endDate.setUTCHours(23, 59, 59, 999);
+  }
+  const ends = endDate?.getTime() ?? null;
+  if (starts !== null && starts > now)
     return { label: "Scheduled", cls: "text-gold" };
-  if (c.endsAt && new Date(c.endsAt).getTime() < now) return { label: "Expired", cls: "text-rose" };
+  if (ends !== null && ends < now) return { label: "Expired", cls: "text-rose" };
   return { label: "Live", cls: "text-accent" };
 }
 
@@ -106,7 +137,19 @@ function CouponEditor({
           <span className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Discount type
           </span>
-          <select className={inputCls} value={draft.type} onChange={(e) => set("type", e.target.value as Draft["type"])}>
+          <select
+            className={inputCls}
+            value={draft.type}
+            onChange={(e) => {
+              const type = e.target.value as Draft["type"];
+              setDraft((current) => ({
+                ...current,
+                type,
+                value: type === "shipping" ? 0 : current.value || (type === "fixed" ? 100 : 10),
+                maxDiscount: type === "percent" ? current.maxDiscount : 0,
+              }));
+            }}
+          >
             <option value="percent">Percent off</option>
             <option value="fixed">Fixed ₹ off</option>
             <option value="shipping">Free shipping</option>
@@ -121,6 +164,8 @@ function CouponEditor({
               className={inputCls}
               type="number"
               min={0}
+              max={draft.type === "percent" ? 100 : undefined}
+              step={draft.type === "percent" ? 0.01 : 1}
               value={draft.value}
               onChange={(e) => set("value", Number(e.target.value))}
             />
@@ -134,6 +179,7 @@ function CouponEditor({
             className={inputCls}
             type="number"
             min={0}
+            step={1}
             value={draft.minOrder}
             onChange={(e) => set("minOrder", Number(e.target.value))}
           />
@@ -147,6 +193,7 @@ function CouponEditor({
               className={inputCls}
               type="number"
               min={0}
+              step={1}
               placeholder="0 = no cap"
               value={draft.maxDiscount}
               onChange={(e) => set("maxDiscount", Number(e.target.value))}
@@ -172,7 +219,7 @@ function CouponEditor({
             onChange={(e) => set("active", e.target.checked)}
             className="size-4 accent-[var(--primary)]"
           />
-          Active (show in announcement bar)
+          Active (available at checkout and in the announcement bar)
         </label>
       </div>
       {error ? <p className="mt-3 text-xs text-rose">{error}</p> : null}
@@ -211,12 +258,18 @@ export function CouponsManager() {
   const [items, setItems] = useState<Coupon[]>([]);
   const [editing, setEditing] = useState<Coupon | "new" | undefined>(undefined);
   const [busyId, setBusyId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [pageError, setPageError] = useState("");
 
   const reload = async () => {
+    setPageError("");
     try {
-      setItems((await adminFetch<Coupon[]>("/api/admin/coupons")) ?? []);
-    } catch {
-      setItems([]);
+      const data = await adminFetch<Coupon[]>("/api/admin/coupons");
+      setItems(Array.isArray(data) ? data : []);
+    } catch (error) {
+      setPageError(error instanceof Error ? error.message : "Could not load coupons.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -224,10 +277,13 @@ export function CouponsManager() {
     let cancelled = false;
     (async () => {
       try {
-        const data = (await adminFetch<Coupon[]>("/api/admin/coupons")) ?? [];
-        if (!cancelled) setItems(data);
-      } catch {
-        if (!cancelled) setItems([]);
+        const data = await adminFetch<Coupon[]>("/api/admin/coupons");
+        if (!cancelled) setItems(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (!cancelled)
+          setPageError(error instanceof Error ? error.message : "Could not load coupons.");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => {
@@ -243,6 +299,9 @@ export function CouponsManager() {
         body: JSON.stringify({ active: !c.active }),
       });
       await reload();
+      notifyCouponsChanged();
+    } catch (error) {
+      setPageError(error instanceof Error ? error.message : "Could not update coupon.");
     } finally {
       setBusyId("");
     }
@@ -254,7 +313,7 @@ export function CouponsManager() {
         <div>
           <h1 className="font-display text-2xl text-primary">Coupons</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {items.length} coupons — active ones rotate in the top announcement bar
+            {items.length} coupons — active coupons can be applied at checkout and appear in the announcement bar
           </p>
         </div>
         <div className="flex gap-2">
@@ -267,6 +326,12 @@ export function CouponsManager() {
         </div>
       </div>
 
+      {pageError ? (
+        <p role="alert" className="mt-4 rounded border border-rose/30 bg-rose/5 px-4 py-3 text-sm text-rose">
+          {pageError}
+        </p>
+      ) : null}
+
       {editing === "new" ? (
         <CouponEditor
           initial={null}
@@ -274,18 +339,21 @@ export function CouponsManager() {
           onSave={async (d) => {
             await adminFetch("/api/admin/coupons", {
               method: "POST",
-              body: JSON.stringify(d),
+              body: JSON.stringify(toPayload(d)),
             });
             await reload();
+            notifyCouponsChanged();
             setEditing(undefined);
           }}
         />
       ) : null}
 
       <div className="mt-5 overflow-hidden rounded-lg border border-border bg-card">
-        {items.length === 0 ? (
+        {loading ? (
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">Loading coupons…</p>
+        ) : items.length === 0 && !pageError ? (
           <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-            No coupons yet. Create one to show it in the announcement bar.
+            No coupons yet. Create one to make a discount code available to customers.
           </p>
         ) : (
           <ul className="divide-y divide-border">
@@ -300,9 +368,10 @@ export function CouponsManager() {
                       onSave={async (d) => {
                         await adminFetch(`/api/admin/coupons/${item._id}`, {
                           method: "PATCH",
-                          body: JSON.stringify(d),
+                          body: JSON.stringify(toPayload(d)),
                         });
                         await reload();
+                        notifyCouponsChanged();
                         setEditing(undefined);
                       }}
                     />
@@ -324,7 +393,7 @@ export function CouponsManager() {
                           &ldquo;{item.message}&rdquo;
                           {item.minOrder ? ` · min order ₹${item.minOrder}` : ""}
                           {item.startsAt || item.endsAt
-                            ? ` · ${item.startsAt ? item.startsAt.slice(0, 10) : "now"} → ${item.endsAt ? item.endsAt.slice(0, 10) : "no end"}`
+                            ? ` · ${dateInputValue(item.startsAt) || "now"} → ${dateInputValue(item.endsAt) || "no end"}`
                             : ""}
                         </p>
                       </div>
@@ -334,9 +403,9 @@ export function CouponsManager() {
                           onClick={() => toggleActive(item)}
                           disabled={busyId === item._id}
                           type="button"
-                          title={item.active ? "Live in announcement bar" : "Paused"}
+                          title={item.active ? "Pause coupon" : "Activate coupon"}
                         >
-                          {item.active ? "Live" : "Paused"}
+                          {item.active ? "Pause" : "Activate"}
                         </button>
                         <button className={btnGhost} onClick={() => setEditing(item)} type="button">
                           Edit
@@ -352,6 +421,9 @@ export function CouponsManager() {
                                 body: JSON.stringify({}),
                               });
                               await reload();
+                              notifyCouponsChanged();
+                            } catch (error) {
+                              setPageError(error instanceof Error ? error.message : "Could not delete coupon.");
                             } finally {
                               setBusyId("");
                             }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { apiGet, API_URL, SITE_URL } from "@/lib/orgo/api";
-import { findProduct, products as fallbackProducts, type Product } from "@/lib/orgo/products";
+import { displayProductImage, findProduct, products as fallbackProducts, type Product } from "@/lib/orgo/products";
 import { productFaqJsonLd, productJsonLd, breadcrumbJsonLd } from "@/lib/orgo/schema";
 import { ProductView } from "./view";
 
@@ -25,7 +25,7 @@ async function loadProduct(slug: string): Promise<Product | null> {
 }
 
 function productImage(product: Product): string {
-  const raw = product.image || product.gallery?.[0] || "";
+  const raw = displayProductImage(product) || product.gallery?.[0] || "";
   if (raw.startsWith("http")) return raw;
   if (raw.startsWith("/uploads/")) return `${API_URL}${raw}`;
   return raw;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { Heart, Star } from "lucide-react";
 import { toast } from "sonner";
-import { inr, type Product } from "@/lib/orgo/products";
+import { displayProductImage, inr, type Product } from "@/lib/orgo/products";
 import { useShop } from "@/lib/orgo/store";
 import { resolveImage } from "@/lib/orgo/image";
 
@@ -17,7 +17,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
       <div className="relative overflow-hidden">
         <Link href={`/product/${product.slug}`}>
           <img
-            src={resolveImage(product.image)}
+            src={resolveImage(displayProductImage(product))}
             alt={product.name}
             loading="lazy"
             className="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
