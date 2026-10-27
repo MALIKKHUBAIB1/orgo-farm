@@ -11,7 +11,7 @@ export const img = {
   curationTiers: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-tiers.jpg",
   soapCollection: "/soap/WhatsApp Image 2026-10-23 at 11.31.57 PM (1).jpeg",
   soapCloseup: "/soap/WhatsApp Image 2026-10-23 at 11.31.58 PM (3).jpeg",
-  logo: "/orgofarmlogo.jpeg",
+  logo: "/orgo/logo-transparent.png",
   curationBronze: "/bronze.jpeg",
   curationSilver: "/silver.jpeg",
   curationGold: "/golds.jpeg",

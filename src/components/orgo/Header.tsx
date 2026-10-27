@@ -216,6 +216,7 @@ export function Header({ products }: { products: Product[] }) {
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const pathname = usePathname();
+  const isHome = pathname === "/";
   const [activeCat, setActiveCat] = useState<string | null>(null);
 
   // Shop query chip changes (shop page) + browser back/forward don't trigger
@@ -245,13 +246,21 @@ export function Header({ products }: { products: Product[] }) {
     <header className="sticky top-0 z-50">
       <Announcement />
       <div className="border-b border-border bg-card/85 backdrop-blur-md">
-        <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between gap-6 px-4 md:px-8">
+        <div
+          className={`mx-auto flex max-w-[1280px] items-center justify-between gap-6 px-4 md:px-8 ${
+            isHome ? "h-[80px] md:h-[88px]" : "h-[68px]"
+          }`}
+        >
           <button className="lg:hidden" onClick={() => setMenu(true)} aria-label="Open menu">
             <Menu className="size-5" />
           </button>
 
           <Link href="/" className="flex shrink-0 items-center gap-3">
-            <img src={img.logo} alt="ORGO FARM logo" className="h-12 w-auto md:h-14" />
+            <img
+              src={img.logo}
+              alt="ORGO FARM logo"
+              className={isHome ? "h-16 w-auto md:h-[4.5rem]" : "h-12 w-auto md:h-14"}
+            />
           </Link>
 
           <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
