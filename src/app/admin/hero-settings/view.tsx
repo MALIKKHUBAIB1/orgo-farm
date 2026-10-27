@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Eye, Loader2 } from "lucide-react";
 import { adminFetch, adminUploadImage } from "@/lib/orgo/admin";
 import { refreshCatalog } from "@/lib/orgo/catalog";
-import { getHeroSettings, type HeroSettings } from "@/lib/orgo/hero-settings";
+import type { HeroSettings } from "@/lib/orgo/hero-settings";
 import { img } from "@/lib/orgo/products";
 import { Field, btnGhost, btnPrimary, inputCls } from "@/components/admin/ui";
 
@@ -17,6 +17,7 @@ const defaults: HeroSettings = {
 };
 
 function HeroPreview({ settings }: { settings: HeroSettings }) {
+  const heroImage = settings.heroImage || img.soapCollection;
   const overlayImage = settings.overlayImage || img.facePack;
   const tagline = settings.tagline || "Handcrafted with Love";
   const title = settings.title || "Pure Care.<br>Straight From Nature.";
@@ -48,7 +49,7 @@ function HeroPreview({ settings }: { settings: HeroSettings }) {
             <div className="absolute -left-6 top-6 hidden size-32 rounded-full bg-beige/70 blur-3xl md:block" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={img.soapCollection}
+              src={heroImage}
               alt="Hero preview"
               className="relative aspect-[4/5] w-full rounded-t-[999px] object-cover"
             />
@@ -186,19 +187,12 @@ export function HeroSettingsManager() {
 
       <div className="mt-6 space-y-5">
         <section className="rounded-lg border border-accent/40 bg-card p-5">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">Main hero image</p>
-          <div className="flex items-center gap-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={img.soapCollection}
-              alt="ORGO FARM natural handmade soap collection"
-              className="h-28 w-24 rounded-md object-cover"
-            />
-            <p className="max-w-sm text-xs leading-relaxed text-muted-foreground">
-              The homepage now features your natural handmade soap photo. The hero text and overlay image can still be
-              customized below.
-            </p>
-          </div>
+          <ImagePicker
+            label="Main hero image"
+            url={settings.heroImage}
+            onChange={(url) => set("heroImage", url)}
+            auto={img.soapCollection}
+          />
         </section>
 
         <section className="rounded-lg border border-accent/40 bg-card p-5">

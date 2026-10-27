@@ -8,6 +8,7 @@ import { useCatalog } from "@/lib/orgo/catalog";
 
 export function Hero() {
   const { hero } = useCatalog();
+  const heroImage = hero?.heroImage || img.soapCollection;
   const overlayImage = hero?.overlayImage || img.facePack;
   const tagline = hero?.tagline || "Handcrafted with Love";
   const title = hero?.title || "Pure Care. Straight From Nature.";
@@ -65,8 +66,8 @@ export function Hero() {
           <div className="absolute -right-12 bottom-24 hidden size-64 animate-float-slower rounded-full bg-rose/20 blur-3xl md:block" />
           <div className="absolute -left-6 bottom-8 hidden size-40 animate-float-slow rounded-full bg-gold/20 blur-3xl lg:block" />
           <img
-            src={img.soapCollection}
-            alt="ORGO FARM natural handmade soap collection"
+            src={heroImage}
+            alt="ORGO FARM hero"
             className="relative aspect-[4/5] w-full animate-kenburns rounded-t-[999px] object-cover soft-shadow"
           />
           <motion.img
