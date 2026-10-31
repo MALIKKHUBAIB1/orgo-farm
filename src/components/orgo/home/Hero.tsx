@@ -17,14 +17,21 @@ export function Hero() {
     "Premium handmade skincare crafted with natural, farm-fresh ingredients and brought directly from the farm to your skin.";
   const [titleA, ...titleRest] = title.split("<br>");
   return (
-    <section className="relative overflow-hidden paper">
+    <section className="relative flex min-h-[calc(100svh-8rem)] items-center overflow-hidden paper md:min-h-[calc(100svh-8.5rem)]">
+      {heroImage ? (
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <img src={heroImage} alt="" className="h-full w-full object-cover object-[68%_center]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/35 via-transparent to-background/10" />
+        </div>
+      ) : null}
       {/* Drifting botanical accents — subtle, premium, alive */}
       <Leaf className="pointer-events-none absolute left-[6%] top-[22%] hidden size-5 animate-float-slow text-sage/40 md:block" />
       <Leaf className="pointer-events-none absolute left-[42%] top-[12%] hidden size-3.5 animate-float-slower text-rose/35 md:block" />
       <Leaf className="pointer-events-none absolute bottom-[18%] left-[12%] hidden size-4 animate-float-slower text-gold/45 md:block" />
       <Sparkles className="pointer-events-none absolute right-[6%] top-[16%] hidden size-4 animate-float-slow text-gold/50 lg:block" />
 
-      <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-4 pb-16 pt-14 md:px-8 md:pb-24 md:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+      <div className="relative mx-auto grid w-full max-w-[1440px] items-center gap-12 px-4 py-16 md:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -56,28 +63,20 @@ export function Hero() {
           </div>
         </motion.div>
 
-        <motion.div
-          className="relative"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="absolute -left-10 top-10 hidden size-56 animate-float-slow rounded-full bg-sage/20 blur-3xl md:block" />
-          <div className="absolute -right-12 bottom-24 hidden size-64 animate-float-slower rounded-full bg-rose/20 blur-3xl md:block" />
-          <div className="absolute -left-6 bottom-8 hidden size-40 animate-float-slow rounded-full bg-gold/20 blur-3xl lg:block" />
-          <img
-            src={heroImage}
-            alt="ORGO FARM hero"
-            className="relative aspect-[4/5] w-full animate-kenburns rounded-t-[999px] object-cover soft-shadow"
-          />
-          <motion.img
-            src={overlayImage}
-            alt="ORGO FARM Signature Face Pack pouch"
-            className="absolute -bottom-6 -left-6 hidden w-40 rounded-sm object-cover lift-shadow md:block lg:w-48"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
+        {overlayImage ? (
+          <motion.div
+            className="flex justify-center lg:justify-end"
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <img
+              src={overlayImage}
+              alt="ORGO FARM hero"
+              className="w-56 rounded-2xl object-cover soft-shadow sm:w-72 md:w-80 lg:w-96 xl:w-[28rem]"
+            />
+          </motion.div>
+        ) : null}
       </div>
     </section>
   );

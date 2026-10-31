@@ -35,31 +35,29 @@ function HeroPreview({ settings }: { settings: HeroSettings }) {
         </span>
       </div>
       <div className="p-5">
-        <div className="grid items-center gap-6 lg:grid-cols-[1.05fr_1fr]">
-          <div>
-            <p className="font-script text-2xl text-rose">{tagline}</p>
-            <h1 className="mt-3 text-3xl leading-[1.1] text-primary md:text-4xl">
-              {titleA}
-              <br />
-              {titleRest.join("<br>")}
-            </h1>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
-          </div>
-          <div className="relative">
-            <div className="absolute -left-6 top-6 hidden size-32 rounded-full bg-beige/70 blur-3xl md:block" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroImage}
-              alt="Hero preview"
-              className="relative aspect-[4/5] w-full rounded-t-[999px] object-cover"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={overlayImage}
-              alt="Overlay preview"
-              className="absolute -bottom-4 -left-4 hidden w-24 rounded-sm object-cover md:block"
-              onError={(e) => ((e.target as HTMLImageElement).src = img.facePack)}
-            />
+        <div className="relative overflow-hidden rounded-lg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={heroImage} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
+          <div className="relative grid items-center gap-6 p-5 lg:grid-cols-[1.15fr_0.85fr]">
+            <div>
+              <p className="font-script text-2xl text-rose">{tagline}</p>
+              <h1 className="mt-3 text-3xl leading-[1.1] text-primary md:text-4xl">
+                {titleA}
+                <br />
+                {titleRest.join("<br>")}
+              </h1>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={overlayImage}
+                alt="Side image preview"
+                className="w-24 rounded-lg object-cover md:w-32"
+                onError={(e) => ((e.target as HTMLImageElement).src = img.facePack)}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -188,7 +186,7 @@ export function HeroSettingsManager() {
       <div className="mt-6 space-y-5">
         <section className="rounded-lg border border-accent/40 bg-card p-5">
           <ImagePicker
-            label="Main hero image"
+            label="Background image (full-width hero)"
             url={settings.heroImage}
             onChange={(url) => set("heroImage", url)}
             auto={img.soapCollection}
@@ -197,7 +195,7 @@ export function HeroSettingsManager() {
 
         <section className="rounded-lg border border-accent/40 bg-card p-5">
           <ImagePicker
-            label="Overlay image (small pouch)"
+            label="Small side image"
             url={settings.overlayImage}
             onChange={(url) => set("overlayImage", url)}
             auto={img.facePack}

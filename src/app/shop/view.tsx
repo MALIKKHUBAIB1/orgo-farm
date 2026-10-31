@@ -56,7 +56,6 @@ export function ShopView({
     if (c) url.searchParams.set("category", c);
     else url.searchParams.delete("category");
     window.history.replaceState(null, "", url);
-    window.dispatchEvent(new Event("orgo:category-change"));
   };
 
   const inBucket = (b: PriceBucket) =>

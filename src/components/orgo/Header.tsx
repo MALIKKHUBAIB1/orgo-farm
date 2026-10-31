@@ -10,18 +10,15 @@ import { resolveImage } from "@/lib/orgo/image";
 import { useShop } from "@/lib/orgo/store";
 import { getActiveCoupons, type Coupon } from "@/lib/orgo/coupons";
 
-// Naya shop category navbar me dikhane ke liye — sirf ye line add karni hai.
-const ROSE_CATEGORY = "Rose Water / Facial Mist";
-
 const nav = [
   { label: "Home", to: "/" },
-  { label: "Shop", to: "/shop" },
-  { label: "Rose Water", to: `/shop?category=${encodeURIComponent(ROSE_CATEGORY)}` },
-  { label: "Collections", to: "/collections" },
+  { label: "Shop All", to: "/shop" },
+  { label: "Soaps", to: "/type/scrub-bars" },
+  { label: "Face Care", to: "/category/face-care" },
+  { label: "Body Care", to: "/category/body-care" },
+  { label: "Gift Hampers", to: "/collections" },
   { label: "Our Story", to: "/about" },
   { label: "Blog", to: "/blog" },
-  { label: "How To Use", to: "/how-to-use" },
-  { label: "Contact", to: "/contact" },
 ] as const;
 
 // Static top bar — sirf sabse naya live coupon dikhta hai (rotation nahi).
@@ -217,28 +214,9 @@ export function Header({ products }: { products: Product[] }) {
   const [search, setSearch] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const [activeCat, setActiveCat] = useState<string | null>(null);
-
-  // Shop query chip changes (shop page) + browser back/forward don't trigger
-  // a pathname change, so track ?category via URL + a lightweight event.
-  useEffect(() => {
-    const sync = () => setActiveCat(new URLSearchParams(window.location.search).get("category"));
-    sync();
-    window.addEventListener("popstate", sync);
-    window.addEventListener("orgo:category-change", sync);
-    return () => {
-      window.removeEventListener("popstate", sync);
-      window.removeEventListener("orgo:category-change", sync);
-    };
-  }, [pathname]);
 
   const navActive = (to: string) => {
     if (to === "/") return pathname === "/";
-    if (to.startsWith("/shop?")) {
-      const want = decodeURIComponent(to.slice(to.indexOf("?category=") + "?category=".length));
-      return pathname === "/shop" && activeCat === want;
-    }
-    if (to === "/shop") return pathname === "/shop" && activeCat !== ROSE_CATEGORY;
     return pathname === to || pathname.startsWith(to);
   };
 

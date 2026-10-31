@@ -19,15 +19,4 @@ export async function getTestimonials(): Promise<Testimonial[]> {
   }
 }
 
-export const fallbackTestimonials: Testimonial[] = [
-  {
-    _id: "fb-1",
-    name: "Verified Customer",
-    quote: "Honest, natural products that actually work. My skin has never felt better.",
-    product: "Signature Face Pack Pouch",
-    rating: 5,
-    avatar: "",
-    sortOrder: 0,
-    visible: true,
-  },
-];
+export const fallbackTestimonials: Testimonial[] = [];

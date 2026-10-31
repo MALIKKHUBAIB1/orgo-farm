@@ -13,7 +13,7 @@ const tiles = [
   { title: "Farm Fresh Ingredients", script: "straight from soil" },
   { title: "Behind The Scenes", script: "life at orgo farm" },
   { title: "Customer Reviews", script: "real results" },
-  { title: "New Launches", script: "coming soon" },
+  { title: "New Launches", script: "fresh drops" },
 ];
 
 function permalinkUrl(code: string, kind: "reel" | "p") {
@@ -121,7 +121,7 @@ export function InstagramView() {
               ))}
             </div>
             <p className="mt-8 text-center text-sm text-muted-foreground">
-              Our latest reels will be embedded here soon — follow us on Instagram in the meantime!
+              Follow us on Instagram for our latest reels, launches and behind-the-scenes moments.
             </p>
           </>
         )}
