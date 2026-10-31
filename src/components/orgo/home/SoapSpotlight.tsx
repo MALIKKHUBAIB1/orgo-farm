@@ -2,7 +2,7 @@ import Image from "next/image";
 import { ArrowDownToLine, FileText, Leaf } from "lucide-react";
 import { img } from "@/lib/orgo/products";
 
-const catalogueUrl = "/soap/Natural%20Soap%20Presentation%20(1).pdf";
+const catalogueUrl = "https://ik.imagekit.io/hliyltsjxz/orgo/natural-soap-catalogue.pdf";
 
 export function SoapSpotlight() {
   return (
@@ -39,7 +39,7 @@ export function SoapSpotlight() {
               <FileText className="size-4" /> VIEW SOAP CATALOGUE
             </a>
             <a
-              href={catalogueUrl}
+              href={`${catalogueUrl}?ik-attachment=true`}
               download="ORGO-FARM-Natural-Soap-Catalogue.pdf"
               className="inline-flex items-center gap-2 border border-primary px-5 py-3 text-[10px] tracking-[0.16em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >

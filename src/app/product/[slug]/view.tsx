@@ -119,7 +119,7 @@ export function ProductView({ product, related }: { product: Product; related: P
 
           {isSoapBar ? (
             <a
-              href="/soap/Natural%20Soap%20Presentation%20(1).pdf"
+              href="https://ik.imagekit.io/hliyltsjxz/orgo/natural-soap-catalogue.pdf"
               target="_blank"
               rel="noreferrer"
               className="mt-5 flex items-center justify-between gap-4 border border-border bg-card px-4 py-3 text-sm transition-colors hover:border-primary"

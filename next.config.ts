@@ -22,6 +22,9 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   /* config options here */
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "ik.imagekit.io" }],
+  },
   reactCompiler: true,
   turbopack: {
     root: path.join(__dirname),
