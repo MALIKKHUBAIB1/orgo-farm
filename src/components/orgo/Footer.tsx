@@ -18,6 +18,7 @@ const cols = [
       { label: "Tan Removal", to: "/concerns/tan" },
       { label: "Acne Care", to: "/concerns/acne" },
       { label: "Curations", to: "/collections" },
+      { label: "How To Use", to: "/how-to-use" },
     ],
   },
   {

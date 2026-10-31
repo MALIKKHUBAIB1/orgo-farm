@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { displayProductImage, inr, type Product } from "@/lib/orgo/products";
 import { useShop } from "@/lib/orgo/store";
@@ -71,12 +71,6 @@ export function ProductCard({ product, compact = false }: { product: Product; co
       </div>
 
       <div className={`flex flex-1 flex-col ${compact ? "p-4" : "p-5"}`}>
-        <div className="flex items-center gap-1 text-terracotta">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className="size-3 fill-current" />
-          ))}
-          <span className="ml-1 text-[11px] text-muted-foreground">Placeholder rating</span>
-        </div>
         <h3 className="mt-2 font-display text-xl leading-snug text-primary">
           <Link href={`/product/${product.slug}`}>
             {product.name}
