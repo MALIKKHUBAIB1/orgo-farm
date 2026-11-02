@@ -11,7 +11,7 @@ export const img = {
   curationTiers: "https://ik.imagekit.io/hliyltsjxz/orgo/curation-tiers.jpg",
   soapCollection: "https://ik.imagekit.io/hliyltsjxz/orgo/soap-collection.jpeg",
   soapCloseup: "https://ik.imagekit.io/hliyltsjxz/orgo/soap-closeup.jpeg",
-  logo: "https://ik.imagekit.io/hliyltsjxz/orgo/logo-transparent.png",
+  logo: "/logo.jpeg",
   curationBronze: "https://ik.imagekit.io/hliyltsjxz/orgo/bronze.jpeg",
   curationSilver: "https://ik.imagekit.io/hliyltsjxz/orgo/silver.jpeg",
   curationGold: "https://ik.imagekit.io/hliyltsjxz/orgo/golds.jpeg",
